@@ -1,12 +1,22 @@
 from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from datetime import date
-from app import app
+from os.path import abspath
 
-engine = create_engine(app.config.get('SQLALCHEMY_DATABASE_URI'))
-Base = declarative_base()
+engine = create_engine(f'sqlite:///{abspath(".")}/db.sqlite')
+Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
+def format_input(*names):
+    result = []
+
+    for name in names:
+        name = ' '.join(name.split()).title()
+        result.append(name)
+    
+    return result[0] if len(result) == 1 else result
 
 
 class BookExists(BaseException):
@@ -14,6 +24,16 @@ class BookExists(BaseException):
 
 
 class SubjectNotFound(BaseException):
+    pass
+
+
+class BookNotFound(BaseException):
+    pass
+
+class OutOfBooks(BaseException):
+    pass
+
+class ReturnFirst(BaseException):
     pass
 
 
@@ -35,8 +55,8 @@ class Book(Base):
 
     @staticmethod
     def add_book(title: str, count=1, subject=None):
-        title = ' '.join(title.split()).title()
-        book_exists = session.query(Book).filter_by(Book.title=title).first()
+        title = format_input(title)
+        book_exists = session.query(Book).filter_by(title=title).first()
 
         if not book_exists:
             subject = session.query(Subjects).filter_by(subject=subject).first()
@@ -60,3 +80,32 @@ class Borrows(Base):
     book_title = Column(String, ForeignKey('book.title'))
     borrow_date = Column(Date, default=date.today())
     return_date = Column(Date)
+
+    @classmethod
+    def borrow_book(cls, book: str, borrower: str, return_date: date, borrow_date: date = date.today()):
+        book, borrower = format_input(book, borrower)
+        book = session.query(Book).filter_by(title=book).first()
+        name_exists = session.query(Borrows).filter_by(borrower=borrower).first()
+
+        if book and book.count and not name_exists:
+            cls.register_borrow(borrower, book, borrow_date, return_date)
+        elif not book:
+            raise BookNotFound
+        elif not book.count:
+            raise OutOfBooks
+        elif name_exists:
+            raise ReturnFirst
+    
+    @staticmethod
+    def register_borrow(borrower, book, borrow_date, return_date):
+        borrow = Borrows(
+            borrower=borrower,
+            book=book,
+            borrow_date=borrow_date,
+            return_date=return_date,
+        )
+
+        book.count -= 1
+
+        session.add_all([borrow, book])
+        session.commit()
