@@ -24,7 +24,7 @@ def create_app(test_config=None):
     
 
     with app.app_context():
-        from .import db
+        from .db import db
         db.init_app(app)
 
     return app
