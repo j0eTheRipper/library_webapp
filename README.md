@@ -1,4 +1,1 @@
-# MOISLIB
-MOIS Library software
-
-Created by youssef alaa
+# a webapp for managing libraries
