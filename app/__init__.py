@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from os import makedirs
 from os.path import isdir, join
 
@@ -18,13 +18,17 @@ def create_app(test_config=None):
     if not isdir(app.instance_path):
         makedirs(app.instance_path)
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    @app.route('/')
+    def _(): 
+        return render_template('home.html')
     
 
     with app.app_context():
-        from .import db
+        from .database_config import db
         db.init_app(app)
+    
+
+    from .login.login import bp
+    app.register_blueprint(bp)
 
     return app
