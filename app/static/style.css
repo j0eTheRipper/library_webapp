@@ -1,0 +1,9 @@
+p {
+    font-size: 2em;
+}
+
+#intro {
+    display: grid;
+    place-items: center;
+    margin: 25% 0%;
+}
