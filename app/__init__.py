@@ -32,7 +32,7 @@ def create_app(test_config=None):
         db.init_app(app)
     
 
-    from .login.login import bp
-    app.register_blueprint(bp)
+    from .authentication.login import login_bp
+    app.register_blueprint(login_bp)
 
     return app
