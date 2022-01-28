@@ -2,8 +2,9 @@ p {
     font-size: 2em;
 }
 
-#intro {
+.content-parent {
     display: grid;
-    place-items: center;
-    margin: 25% 0%;
+    justify-content: center;
+    align-content: center;
+    gap: 5px;
 }
