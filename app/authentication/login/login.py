@@ -12,3 +12,7 @@ def login_get():
         return render_template('authentication/login.html')
     else:
         return redirect(url_for('/'))
+
+@bp.route('/', methods=['POST'])
+def login_post():
+    pass

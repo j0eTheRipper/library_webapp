@@ -2,9 +2,10 @@ p {
     font-size: 2em;
 }
 
-.content-parent {
+.content {
     display: grid;
     justify-content: center;
     align-content: center;
+    margin-top: 15%;
     gap: 5px;
 }
