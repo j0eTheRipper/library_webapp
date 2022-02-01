@@ -1,6 +1,8 @@
+from random import choices
 from flask import Flask, render_template, request, url_for, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_wtf import FlaskForm
+from wtforms.fields import SelectField, SubmitField
 from os.path import abspath, dirname, join
 from datetime import date
 
@@ -11,7 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{join(BASE_DIR, "db.sqlite")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'JAOSIUE8U903820ISKDJF'
 db = SQLAlchemy(app)
-migrate = Migrate(app, db, render_as_batch=True)
 
 
 class BookExists(BaseException):
@@ -26,16 +27,13 @@ class OutOfBooks(BaseException):
     pass
 
 
-class BorrowNotFound(BaseException):
-    pass
-
-
 class ReturnFirst(BaseException):
     pass
 
 
 class SubjectNotFound(BaseException):
     pass
+
 
 
 class Subjects(db.Model):
@@ -52,17 +50,20 @@ class Book(db.Model):
     title = db.Column(db.String(32), unique=True, index=True)
     book_subject = db.Column(db.String, db.ForeignKey('subjects.subject'))
     count = db.Column(db.Integer, default=1)
-    borrowed = db.relationship('Borrows', backref='book', uselist=False)
+    borrowed = db.relationship('Borrows', backref='book')
 
 
 class Borrows(db.Model):
     __tablename__ = 'borrows'
 
     id = db.Column(db.Integer, primary_key=True)
-    borrower = db.Column(db.String(32), unique=True, index=True)
+    borrower = db.Column(db.String(32), index=True)
+    borrower_class = db.Column(db.String(4))
     book_title = db.Column(db.String, db.ForeignKey('book.title'))
+    librarian = db.Column(db.String)
     borrow_date = db.Column(db.Date, default=date.today())
     return_date = db.Column(db.Date)
+    is_returned = db.Column(db.Boolean, default=False)
 
 
 def add_book(title: str, count=1, subject=None):
@@ -83,69 +84,48 @@ def add_book(title: str, count=1, subject=None):
         raise BookExists
 
 
-def borrow_book(book: str, name: str, return_date: date, borrow_date: date = date.today()):
+def borrow_book(book: str, name: str, return_date: date, student_class:str, librarian:str):
     book = ' '.join(book.split()).title()
     name = ' '.join(name.split()).title()
+    librarian = ' '.join(librarian.split()).title()
     book = Book.query.filter_by(title=book).first()
-    name_exists = bool(Borrows.query.filter_by(borrower=name).first())
+    borrower = Borrows.query.filter_by(borrower=name).first()
+    is_returned = True if borrower is None else borrower.is_returned
 
-    if book and book.count and not name_exists:
+    if book and book.count and is_returned:
         borrow = Borrows(
             borrower=name,
             book=book,
-            borrow_date=borrow_date,
             return_date=return_date,
+            borrower_class=student_class,
+            librarian=librarian,
         )
 
         book.count -= 1
-        book.is_borrowed = True
 
         db.session.add_all([borrow, book])
         db.session.commit()
+
+        return borrow.id
     elif not book:
         raise BookNotFound
     elif not book.count:
         raise OutOfBooks
-    elif name_exists:
+    elif not is_returned:
         raise ReturnFirst
 
 
-class Return:
-    def __init__(self, borrow_id: int = 0, student_name: str = ''):
-        self.student_name = ' '.join(student_name.split()).title() if student_name else ''
-        self.borrow_id = borrow_id
+def return_book(borrow_id: int):
+    borrow = Borrows.query.filter_by(id=borrow_id).first()
 
-        self.return_book()
+    book = borrow.book
+    book.count += 1
+    db.session.add(book)
 
-    def return_book(self):
-        if self.borrow_id:
-            self.return_by_id()
-        elif self.student_name:
-            self.return_by_student_name()
+    borrow.is_returned = True
+    db.session.add(borrow)
 
-    def return_by_student_name(self):
-        borrow = Borrows.query.filter_by(borrower=self.student_name).first()
-        if borrow:
-            self.return_(borrow)
-        else:
-            raise BorrowNotFound
-
-    def return_by_id(self):
-        borrow = Borrows.query.filter_by(id=self.borrow_id).first()
-
-        if borrow:
-            self.return_(borrow)
-        else:
-            raise BorrowNotFound
-
-    @staticmethod
-    def return_(borrow):
-        book = borrow.book
-        book.count += 1
-        book.is_borrowed = False
-        db.session.add(book)
-        db.session.delete(borrow)
-        db.session.commit()
+    db.session.commit()
 
 
 @app.route('/')
@@ -163,16 +143,24 @@ def add_book_get():
 def add_book_post():
     title = request.form.get('title')
     count = int(request.form.get('count'))
+    subject = request.form.get('subject').capitalize()
+    print(subject)
     try:
-        add_book(title, count)
+        add_book(title, count, subject)
     except BookExists:
         return '<h1>That book is already added</h1>'
+    except SubjectNotFound:
+        subject_record = Subjects(subject=subject)
+        db.session.add(subject_record)
+        db.session.commit()
+        add_book(title, count, subject)
+
     return redirect(url_for('home', added_book=True))
 
 
-@app.route('/borrow')
-def borrow_get():
-    return render_template('borrow.html')
+@app.route('/borrow/<title>')
+def borrow_get(title=None):
+    return render_template('borrow.html', title=title)
 
 
 @app.route('/borrow', methods=['POST'])
@@ -180,40 +168,30 @@ def borrow_post():
     book = request.form.get('book')
     name = request.form.get('student_name')
     return_date = request.form.get('return_date')
+    student_class = request.form.get('student_class')
+    librarian = request.form.get('librarian')
     return_date = [int(i) for i in return_date.split('-')]
     return_date = date(*return_date)
 
     try:
-        borrow_book(book, name, return_date)
+        borrow_info = borrow_book(book, name, return_date, student_class, librarian)
+        return redirect(url_for('view_borrows', borrow_id=borrow_info))
     except OutOfBooks:
         return '<h1> Out of that book </h1>'
     except ReturnFirst:
         return '<h1> Return the book you last borrowed </h1>'
 
-    return redirect(url_for('home'))
 
 
-@app.route('/return')
-def return_book_get():
-    return render_template('return.html')
+@app.route('/return/<int:return_id>')
+def return_book_get(return_id):
+    return return_book_post(return_id)
 
 
 @app.route('/return', methods=['POST'])
-def return_book_post():
-    borrower = request.form.get('borrower')
-    borrow_id = request.form.get('borrow_id')
-    # book = request.form.get('book_title')
-
-    try:
-        if borrower:
-            Return(student_name=borrower)
-        elif borrow_id:
-            borrow_id = int(borrow_id)
-            Return(borrow_id=borrow_id)
-    except BorrowNotFound:
-        return '<h1>Wrong! You might have typo there.</h1>'
-    else:
-        return redirect(url_for('home'))
+def return_book_post(borrow_id):
+    return_book(borrow_id=borrow_id)
+    return redirect(url_for('view_borrows'))
 
 
 @app.route('/search')
@@ -229,11 +207,21 @@ def book_search():
 
     query = generate_query(show_0, subject_query)
     query_result = db.engine.execute(query).all()
-    print(query)
     context['results'] = query_result
 
     return render_template('search.html', **context)
 
+
+@app.route('/view_borrows')
+def view_borrows():
+    filter = request.args.get('returned')
+    borrow_id = request.args.get('borrow_id')
+    print(filter)
+    if filter:
+        borrows = Borrows.query.filter_by(is_returned=False).all()
+    else:
+        borrows = Borrows.query.all()
+    return render_template('view_borowed.html', borrows=borrows, borrow_id=borrow_id)
 
 def generate_query(show_0, subject_query):
     query = 'SELECT title, book_subject, count FROM book '
@@ -256,5 +244,5 @@ def imports():
         borrow_book=borrow_book,
         Book=Book,
         Borrows=Borrows,
-        Return=Return,
+        Return=return_book,
     )

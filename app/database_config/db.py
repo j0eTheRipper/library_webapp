@@ -1,8 +1,7 @@
 from flask import g
 from flask.cli import with_appcontext
 import click
-from .models import Session, Base
-
+from .models import Session, Base, Subject
 
 
 def get_db():
@@ -21,6 +20,13 @@ def init_db():
     Base.metadata.drop_all()
     Base.metadata.create_all()
 
+    subjects = ['Math', 'Physics', 'Computer', 'Story']
+    subject_db = [Subject(subject=subject) for subject in subjects]
+
+    with Session() as session:
+        session.add_all(subject_db)
+        session.commit()
+
 
 @click.command('init-db')
 @with_appcontext
@@ -32,4 +38,3 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-
