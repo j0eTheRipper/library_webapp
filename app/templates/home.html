@@ -2,10 +2,14 @@
 {% block page_title %}
     Home
 {% endblock %}
-{% block content %}
+{% block page_content %}
 {% if not is_logged_in %}
     <div class="container-fluid content">
         <h1> PLEASE <a href="/login">LOGIN</a> OR <a href="/signup">SIGNUP</a>... </h1>
+    </div>
+{% else %}
+    <div class="container-fluid content">
+        <h1>You're successfully logged in!</h1>
     </div>
 {% endif %}
 {% endblock %}
