@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block page_title %}
+    Login
+{% endblock %}
+{% block page_content %}
+    <form method="post" class="container content">
+        <h1>login</h1>
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" id="password" placeholder="Password" required><br>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+{% endblock %}
