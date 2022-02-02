@@ -21,18 +21,27 @@ def login_post():
     password = request.form.get('password')
 
     db = get_db()
-    user = db.query(Users).filter_by(username=username).first()
+    user_query = db.query(Users).filter_by(username=username).first()
+    db.close()
 
-    if user:
-        password_correct = check_password_hash(user.password, password)
+    return validate_credentials(password, user_query, username)
 
-        if password_correct:
-            session['username'] = username
-            flash('Logged in successfully!', 'success')
-            return redirect(url_for('home.home'))
-        else:
-            flash('Incorrect Password', 'danger')
-            return redirect(url_for('login.login_get'))
+
+def validate_credentials(password, user_query, username):
+    if user_query:
+        return validate_password(password, user_query, username)
     else:
         flash('Incorrect Username!', 'danger')
+        return redirect(url_for('login.login_get'))
+
+
+def validate_password(password, user_query, username):
+    password_correct = check_password_hash(user_query.password, password)
+
+    if password_correct:
+        session['username'] = username
+        flash('Logged in successfully!', 'success')
+        return redirect(url_for('home.home'))
+    else:
+        flash('Incorrect Password', 'danger')
         return redirect(url_for('login.login_get'))
