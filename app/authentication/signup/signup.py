@@ -24,6 +24,8 @@ def signup_post():
 def validate_user_input(password, password_confirmation, username):
     db = get_db()
     user_exists = db.query(Users).filter_by(username=username).first()
+    db.close()
+
     if user_exists:
         flash('This username is already taken, please try another one.', 'danger')
         return redirect(url_for('signup.signup_get'))
