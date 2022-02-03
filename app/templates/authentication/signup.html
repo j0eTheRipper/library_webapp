@@ -3,13 +3,14 @@
 {% block page_content %}
 <div class="container-fluid content">
     <h1>Sign Up</h1>
-    <form action="/signup" method="post" id="signup">
+    <form action="/signup/" method="post" id="signup">
         <input type="text" name="username" placeholder="username" required>
-        <input type="email" name="email" placeholder="email" required><br>
+        <br>
         <div class="separate">
-            <input type="password" name="password" placeholder="password" required><br>
-            <button type="submit" class="btn btn-primary">Sign up</button>
+            <input type="password" name="password" placeholder="password" required>
+            <input type="password" name="password_confirmation" placeholder="confirm password">
         </div>
+        <button type="submit" class="btn btn-primary">Sign up</button>
     </form>
 </div>
 {% endblock %}
