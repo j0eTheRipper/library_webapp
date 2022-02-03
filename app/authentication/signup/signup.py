@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash
-from ...database_config.db import get_db
+from ...database_config.db import get_db, close_db
 from ...database_config.models import Users
 
 
@@ -24,7 +24,7 @@ def signup_post():
 def validate_user_input(password, password_confirmation, username):
     db = get_db()
     user_exists = db.query(Users).filter_by(username=username).first()
-    db.close()
+    close_db()
 
     if user_exists:
         flash('This username is already taken, please try another one.', 'danger')
@@ -51,5 +51,5 @@ def add_to_db(user):
     db = get_db()
     db.add(user)
     db.commit()
-    db.close()
+    close_db()
 

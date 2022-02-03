@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from werkzeug.security import check_password_hash
-from ...database_config.db import get_db
+from ...database_config.db import get_db, close_db
 from ...database_config.models import Users
 
 
@@ -22,7 +22,7 @@ def login_post():
 
     db = get_db()
     user_query = db.query(Users).filter_by(username=username).first()
-    db.close()
+    close_db()
 
     return validate_credentials(password, user_query, username)
 
