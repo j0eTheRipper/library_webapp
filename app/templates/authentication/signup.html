@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block page_title %} Sign Up {% endblock %}
+{% block page_content %}
+<div class="container-fluid content">
+    <h1>Sign Up</h1>
+    <form action="/signup" method="post" id="signup">
+        <input type="text" name="username" placeholder="username" required>
+        <input type="email" name="email" placeholder="email" required><br>
+        <div class="separate">
+            <input type="password" name="password" placeholder="password" required><br>
+            <button type="submit" class="btn btn-primary">Sign up</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -26,8 +26,10 @@ def create_app(test_config=None):
         db.init_app(app)
 
     from .authentication.login import login_bp
-    from .home import bp as home
+    from .authentication.signup import signup_bp
+    from .home import bp as home_bp
     app.register_blueprint(login_bp)
-    app.register_blueprint(home)
+    app.register_blueprint(signup_bp)
+    app.register_blueprint(home_bp)
 
     return app

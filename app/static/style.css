@@ -9,3 +9,9 @@ p {
     margin-top: 15%;
     gap: 5px;
 }
+
+.separate {
+    display: inline-grid;
+    gap: 5px;
+    margin: 5px 0px;
+}
