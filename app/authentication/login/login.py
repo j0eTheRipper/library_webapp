@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash, Markup
 from werkzeug.security import check_password_hash
 from ...database_config.db import get_db, close_db
 from ...database_config.models import Users
@@ -31,7 +31,8 @@ def validate_credentials(password, user_query, username):
     if user_query:
         return validate_password(password, user_query, username)
     else:
-        flash('Incorrect Username!', 'danger')
+        message = Markup('This username is not Registered. <a href="/signup">Sign up here</a>.')
+        flash(message, 'danger')
         return redirect(url_for('login.login_get'))
 
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash, Markup
 from werkzeug.security import generate_password_hash
 from ...database_config.db import get_db, close_db
 from ...database_config.models import Users
@@ -18,22 +18,32 @@ def signup_post():
     password = request.form.get('password')
     password_confirmation = request.form.get('password_confirmation')
 
-    return validate_user_input(password, password_confirmation, username)
+    if check_for_errors(password, password_confirmation, username):
+        return redirect(url_for('signup.signup_get'))
+    else:
+        return register_user(password, username)
 
 
-def validate_user_input(password, password_confirmation, username):
+def check_for_errors(password, password_confirmation, username):
     db = get_db()
     user_exists = db.query(Users).filter_by(username=username).first()
     close_db()
+    error = False
 
     if user_exists:
-        flash('This username is already taken, please try another one.', 'danger')
-        return redirect(url_for('signup.signup_get'))
+        message = Markup(
+            'This username is already registered. <a href="/login">Login</a> if you already have an account or try '
+            'another username.')
+        flash(message, 'danger')
+        error = True
     elif password != password_confirmation:
         flash('Passwords do not match!', 'danger')
-        return redirect(url_for('signup.signup_get'))
+        error = True
+    elif ' ' in username:
+        flash('Spaces are not allowed in usernames.', 'danger')
+        error = True
 
-    return register_user(password, username)
+    return error
 
 
 def register_user(password, username):
