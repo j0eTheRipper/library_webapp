@@ -1,0 +1,53 @@
+from os.path import isfile
+
+from pytest import fixture
+from werkzeug.security import generate_password_hash
+
+from app import create_app
+from . import db_path
+
+
+@fixture
+def app():
+    app = create_app(
+        {
+            'TESTING': True,
+            'DATABASE': db_path,
+        }
+    )
+
+    if not isfile(db_path):
+        with app.app_context():
+            from app.database_config.db import init_db, get_db
+            from app.database_config.models import Users
+
+            init_db()
+            db = get_db()
+            user = Users(username='test', password=generate_password_hash('no_thing'))
+            db.add(user)
+            db.commit()
+
+    yield app
+
+
+@fixture
+def client(app):
+    return app.test_client()
+
+
+class Authenticate:
+    def __init__(self, client):
+        self.cli = client
+
+    def login(self):
+        data = {
+            'username': 'test',
+            'password': 'no_thing',
+        }
+
+        return self.cli.post('/login/', data=data)
+
+
+@fixture
+def auth(client):
+    return Authenticate(client)
