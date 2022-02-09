@@ -33,7 +33,7 @@ def validate_credentials(password, user_query, username):
     else:
         message = Markup('This username is not Registered. <a href="/signup">Sign up here</a>.')
         flash(message, 'danger')
-        return redirect(url_for('login.login_get'))
+        return redirect(url_for('login.login_get'), 305)
 
 
 def validate_password(password, user_query, username):
@@ -45,4 +45,4 @@ def validate_password(password, user_query, username):
         return redirect(url_for('home.home'))
     else:
         flash('Incorrect Password', 'danger')
-        return redirect(url_for('login.login_get'))
+        return redirect(url_for('login.login_get'), 305)

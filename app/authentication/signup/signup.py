@@ -19,7 +19,7 @@ def signup_post():
     password_confirmation = request.form.get('password_confirmation')
 
     if check_for_errors(password, password_confirmation, username):
-        return redirect(url_for('signup.signup_get'))
+        return redirect(url_for('signup.signup_get'), 300)
     else:
         return register_user(password, username)
 

@@ -39,13 +39,22 @@ class Authenticate:
     def __init__(self, client):
         self.cli = client
 
-    def login(self):
+    def login(self, username='test', password='no_thing'):
         data = {
-            'username': 'test',
-            'password': 'no_thing',
+            'username': username,
+            'password': password,
         }
 
         return self.cli.post('/login/', data=data)
+
+    def signup(self, username, password, password_confirmation):
+        data = {
+            'username': username,
+            'password': password,
+            'password_confirmation': password_confirmation,
+        }
+
+        return self.cli.post('/signup/', data=data)
 
 
 @fixture
