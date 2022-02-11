@@ -32,5 +32,6 @@ def create_app(test_config=None):
 
     from .index import index_bp
     app.register_blueprint(index_bp)
+    # app.add_url_rule('/', 'home')
 
     return app

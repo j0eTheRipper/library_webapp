@@ -53,7 +53,6 @@ def register_user(password, username):
 
     add_to_db(user)
 
-    flash(f'Welcome, {username}, here you are!', 'success')
     return redirect(url_for('home.home'))
 
 

@@ -27,13 +27,22 @@ def login_post():
     return validate_credentials(password, user_query, username)
 
 
+@bp.route('/logout')
+def logout():
+    del session['username']
+    del session['is_admin']
+
+    flash('Goodbye!', 'warning')
+    return redirect(url_for('home.home'))
+
+
 def validate_credentials(password, user_query, username):
     if user_query:
         return validate_password(password, user_query, username)
     else:
         message = Markup('This username is not Registered. <a href="/signup">Sign up here</a>.')
         flash(message, 'danger')
-        return redirect(url_for('login.login_get'), 305)
+        return redirect(url_for('login.login_get'))
 
 
 def validate_password(password, user_query, username):
@@ -41,8 +50,9 @@ def validate_password(password, user_query, username):
 
     if password_correct:
         session['username'] = username
+        session['is_admin'] = user_query.is_admin
         flash('Logged in successfully!', 'success')
         return redirect(url_for('home.home'))
     else:
         flash('Incorrect Password', 'danger')
-        return redirect(url_for('login.login_get'), 305)
+        return redirect(url_for('login.login_get'))

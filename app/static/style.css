@@ -16,6 +16,11 @@ p {
     margin: 5px 0px;
 }
 
-.stretch-across {
+#logout {
+    color: red;
+}
 
+#username {
+	font-weight: bolder;
+	color: green;
 }
