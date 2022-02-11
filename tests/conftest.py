@@ -24,7 +24,12 @@ def app():
             init_db()
             db = get_db()
             user = Users(username='test', password=generate_password_hash('no_thing'))
-            db.add(user)
+            admin = Users(
+                username='test_admin',
+                password=generate_password_hash('really_complex_password'),
+                is_admin=True
+            )
+            db.add_all([user, admin])
             db.commit()
 
     yield app
