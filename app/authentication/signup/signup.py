@@ -50,6 +50,7 @@ def register_user(password, username):
     passwd = generate_password_hash(password)
     user = Users(username=username, password=passwd)
     session['username'] = username
+    session['is_admin'] = False
 
     add_to_db(user)
 
