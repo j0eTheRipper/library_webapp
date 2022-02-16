@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block page_title %}
+    browse books
+{% endblock %}
+{% block page_content %}
+<h1 align="center">Browse Books</h1>
+    <div class="container">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Available qty</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for book in books %}
+                <tr onclick="window.location = '/borrow/{{book.id}}'">
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.subject }}</td>
+                    <td>{{ book.count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
