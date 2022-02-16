@@ -27,6 +27,9 @@ class Books(Base):
     count = Column(Integer, default=1, nullable=False)
     borrows = relationship('Borrows', backref='books')
 
+    def __repr__(self):
+        return f'<Book {self.id}: {self.title}>'
+
 
 class Users(Base):
     __tablename__ = 'users'
