@@ -50,4 +50,3 @@ class Borrows(Base):
     date_borrowed = Column(Date, default=date.today(), nullable=False)
     date_returned = Column(Date, nullable=False)
     is_returned = Column(Boolean, default=False, nullable=False)
-    is_overdue = Column(Boolean, default=False, nullable=False)
