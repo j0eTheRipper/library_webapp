@@ -19,7 +19,7 @@ def signup_post():
     password_confirmation = request.form.get('password_confirmation')
 
     if check_for_errors(password, password_confirmation, username):
-        return redirect(url_for('signup.signup_get'), 300)
+        return redirect(url_for('signup.signup_get'))
     else:
         return register_user(password, username)
 
@@ -54,6 +54,7 @@ def register_user(password, username):
 
     add_to_db(user)
 
+    flash(f'Welcome, {username}, you made it!', 'success')
     return redirect(url_for('home.home'))
 
 
