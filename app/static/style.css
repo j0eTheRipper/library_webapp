@@ -24,3 +24,16 @@ p {
 	font-weight: bolder;
 	color: green;
 }
+
+#book {
+	color: blue;
+	font-weight: bolder;
+	font-style: italic;
+}
+
+.disabled {
+  color: currentColor;
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
+}
