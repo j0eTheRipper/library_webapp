@@ -39,7 +39,7 @@ def borrow_post(book, user, db):
         return redirect(url_for('home.home'))
     else:
         flash(f'Incorrect Password', 'danger')
-        return redirect(url_for('borrow.borrow_get', book=book.id))
+        return redirect(url_for('borrow.browse'))
 
 
 def borrow_book(book, db, user):
