@@ -8,4 +8,11 @@ bp = Blueprint('view_borrows', __name__, url_prefix='/view_borrows')
 
 @bp.route('/')
 def view_borrows():
-    pass
+    db = get_db()
+
+    if session.get('is_admin'):
+        borrows = db.query(Borrows).all()
+    else:
+        borrows = db.query(Users).filter_by(username=session['username']).first().borrows
+
+    return render_template('view_borrows/view_borrows.html', borrows=borrows)

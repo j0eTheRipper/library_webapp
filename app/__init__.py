@@ -36,4 +36,7 @@ def create_app(test_config=None):
     from .borrow import borrow_bp
     app.register_blueprint(borrow_bp)
 
+    from .view_borrows import view_borrows_bp
+    app.register_blueprint(view_borrows_bp)
+
     return app
