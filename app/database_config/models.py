@@ -48,5 +48,5 @@ class Borrows(Base):
     borrower = Column(String, ForeignKey('users.username'), nullable=False)
     book = Column(String, ForeignKey('books.title'), nullable=False)
     date_borrowed = Column(Date, default=date.today(), nullable=False)
-    date_returned = Column(Date, nullable=False)
-    is_returned = Column(Boolean, default=False, nullable=False)
+    due_date = Column(Date, nullable=False)
+    date_returned = Column(Date, nullable=True)

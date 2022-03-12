@@ -45,7 +45,7 @@ def borrow_post(book, user, db):
 def borrow_book(book, db, user):
     borrow_date = date.today()
     return_date = borrow_date + timedelta(days=7)
-    borrow = Borrows(borrower=user.username, book=book.title, date_returned=return_date)
+    borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
     book.count -= 1
     db.add_all([borrow, book])
     db.commit()
