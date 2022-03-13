@@ -134,5 +134,5 @@ dmypy.json
 # drafts
 db/
 
-db.sqlite
+*.sqlite
 app.py
