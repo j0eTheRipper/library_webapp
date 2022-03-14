@@ -1,3 +1,5 @@
+from os import remove
+
 from pytest import fixture
 from app import create_app
 from werkzeug.security import generate_password_hash
@@ -14,14 +16,15 @@ def app():
 
     with app.app_context():
         from app.database_config.db import get_db, init_db, close_db
-        from app.database_config.models import Users
+        from app.database_config.models import Users, Books
 
         init_db()
         admin = Users(username='admin', password=generate_password_hash('admin'), is_admin=True)
-        normal_user = Users(username='user', password=generate_password_hash('password'), is_admin=False)
+        book1 = Books(title='Clean Code', subject='Computer', author='Robert C. Martin', count=0)
+        book2 = Books(title='The Fault In Our Stars', subject='Story', author='John Green', count=1)
 
         db = get_db()
-        db.add_all([admin, normal_user])
+        db.add_all([admin, book1, book2])
         db.commit()
         close_db()
 

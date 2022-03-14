@@ -3,11 +3,23 @@ from flask import Blueprint, render_template, request, session, url_for, flash, 
 from werkzeug.security import check_password_hash
 from ..database_config.db import get_db, close_db
 from ..database_config.models import Books, Users, Borrows
+from functools import wraps
 
 bp = Blueprint('borrow', __name__, url_prefix='/borrow')
 
 
+def is_logged_in(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if session.get('username'):
+            return func(*args, **kwargs)
+        else:
+            return redirect(url_for('login.login_get'))
+    return wrapper
+
+
 @bp.route('/browse')
+@is_logged_in
 def browse():
     db = get_db()
     book_list = db.query(Books).all()
@@ -16,6 +28,7 @@ def browse():
 
 
 @bp.route('/<int:book>', methods=['GET', 'POST'])
+@is_logged_in
 def borrow_get(book):
     db = get_db()
     book = db.query(Books).filter_by(id=book).first()
@@ -39,7 +52,7 @@ def borrow_post(book, user, db):
         return redirect(url_for('home.home'))
     else:
         flash(f'Incorrect Password', 'danger')
-        return redirect(url_for('borrow.browse'))
+        return redirect(url_for('borrow.borrow_get', book=book.id))
 
 
 def borrow_book(book, db, user):
