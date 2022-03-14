@@ -36,3 +36,33 @@ def client(app):
 @fixture
 def runner(app):
     return app.test_cli_runner()
+
+
+class AuthActions:
+    def __init__(self, client):
+        self.__client = client
+
+    def login(self, username, password):
+        data = {
+            'username': username,
+            'password': password,
+        }
+
+        return self.__client.post('/login/', data=data)
+
+    def logout(self):
+        return self.__client.get('/login/logout')
+
+    def signup(self, username, password, password_conf):
+        data = {
+            'username': username,
+            'password': password,
+            'password_confirmation': password_conf,
+        }
+
+        return self.__client.post('/signup/', data=data)
+
+
+@fixture
+def authenticate(client):
+    return AuthActions(client)
