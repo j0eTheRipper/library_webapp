@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 from flask import Blueprint, render_template, request, session, url_for, flash, redirect
 from werkzeug.security import check_password_hash
-from ..database_config.db import get_db, close_db
-from ..database_config.models import Books, Users, Borrows
+from ..database_config.db import get_db
+from ..database_config.models import Books, Users, Borrows, Subject
 from functools import wraps
 
 bp = Blueprint('borrow', __name__, url_prefix='/borrow')
@@ -21,10 +21,16 @@ def is_logged_in(func):
 @bp.route('/browse')
 @is_logged_in
 def browse():
+    subject_filter = request.args.get('subject')
     db = get_db()
-    book_list = db.query(Books).all()
-    close_db()
-    return render_template('borrow/browse.html', books=book_list)
+
+    if subject_filter:
+        book_list = db.query(Subject).filter_by(subject=subject_filter).first().books
+    else:
+        book_list = db.query(Books).all()
+
+    subjects = db.query(Subject).all()
+    return render_template('borrow/browse.html', books=book_list, subjects=subjects)
 
 
 @bp.route('/<int:book>', methods=['GET', 'POST'])

@@ -4,26 +4,39 @@
 {% endblock %}
 {% block page_content %}
 <h1 align="center">Browse Books</h1>
-    <div class="container">
-        <table class="table table-hover table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Author</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Available qty</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for book in books %}
-                <tr onclick="window.location = '/borrow/{{book.id}}'">
-                    <td>{{ book.title }}</td>
-                    <td>{{ book.author }}</td>
-                    <td>{{ book.subject }}</td>
-                    <td>{{ book.count }}</td>
+    <div class="browsing">
+        <div class="table">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Available qty</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for book in books %}
+                    <tr onclick="window.location = '/borrow/{{book.id}}'">
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.subject }}</td>
+                        <td>{{ book.count }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="filters" align="center">
+            <form method="get">
+                <select name="subject" onchange="this.form.submit()" class="filter">
+                    <option selected>Filter By Subject</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.subject}}">{{subject.subject}}</option>
+                    {% endfor %}
+                </select>
+                <a class="btn btn-primary filter" href="/borrow/browse" role="button">Reset Subject Filter</a>
+            </form>
+        </div>
     </div>
 {% endblock %}
