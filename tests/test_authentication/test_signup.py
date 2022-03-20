@@ -1,3 +1,5 @@
+from flask import session
+
 URL = 'http://localhost/signup/'
 
 
@@ -12,7 +14,9 @@ def test_signup(app, client, authenticate):
         from app.database_config.models import Users
 
         db = get_db()
-        assert db.query(Users).filter_by(username='new_user').first() is not None
+        new_user_db_record = db.query(Users).filter_by(username='new_user').first()
+        assert new_user_db_record is not None
+        assert not new_user_db_record.is_admin
 
 
 def test_registered_user(app, authenticate, client):

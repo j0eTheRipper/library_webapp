@@ -1,11 +1,36 @@
+from flask import session
+
 URL = 'http://localhost/login/'
 
 
-def test_login(client, authenticate):
+def test_login_admin(client, authenticate):
     assert client.get(URL).status_code == 200
 
     response = authenticate.login('admin', 'admin')
     assert response.headers['Location'] == 'http://localhost/'
+
+    with client:
+        response = client.get('http://localhost/')
+        assert session['is_admin']
+
+        assert b'Browse Books' not in response.data
+        assert b'Manage Books' in response.data
+        assert b'View Recent Borrows' in response.data
+        assert b'Logout' in response.data
+
+
+def test_login_user(client, authenticate):
+    response = authenticate.login('user', 'user')
+    assert response.headers['Location'] == 'http://localhost/'
+
+    with client:
+        response = client.get('http://localhost/')
+        assert not session['is_admin']
+
+        assert b'Browse Books' in response.data
+        assert b'Manage Books' not in response.data
+        assert b'View Recent Borrows' in response.data
+        assert b'Logout' in response.data
 
 
 def test_wrong_password(authenticate, client):

@@ -20,11 +20,13 @@ def app():
 
         init_db()
         admin = Users(username='admin', password=generate_password_hash('admin'), is_admin=True)
+        user = Users(username='user', password=generate_password_hash('user'))
+
         book1 = Books(title='Clean Code', subject='Computer', author='Robert C. Martin', count=0)
         book2 = Books(title='The Fault In Our Stars', subject='Story', author='John Green', count=1)
 
         db = get_db()
-        db.add_all([admin, book1, book2])
+        db.add_all([admin, book1, book2, user])
         db.commit()
         close_db()
 
