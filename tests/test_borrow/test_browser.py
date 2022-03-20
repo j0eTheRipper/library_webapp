@@ -1,5 +1,3 @@
-from tests.shared_assertions import assert_books
-
 URL = 'http://localhost/borrow/browse'
 
 
@@ -47,3 +45,9 @@ def test_subject_filter(app, client, authenticate):
         assert_books(response, all_books, False)
 
 
+def assert_books(response, book_list, book_in_page=True):
+    for book in book_list:
+        if book_in_page:
+            assert bytes(book.title, encoding='UTF8') in response.data
+        else:
+            assert not bytes(book.title, encoding='UTF8') in response.data

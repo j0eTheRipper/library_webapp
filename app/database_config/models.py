@@ -52,11 +52,9 @@ class Borrows(Base):
     date_returned = Column(Date, nullable=True)
 
     @staticmethod
-    def borrow_book(book, db, user):
+    def borrow_book(book: Books, user: Users):
         borrow_date = date.today()
         return_date = borrow_date + timedelta(days=7)
         borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
         book.count -= 1
-        db.add_all([borrow, book])
-        db.commit()
-        return return_date
+        return borrow, book
