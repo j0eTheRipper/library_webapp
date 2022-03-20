@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy import create_engine, Column, Integer, ForeignKey, Boolean, Date, String
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
@@ -50,3 +50,13 @@ class Borrows(Base):
     date_borrowed = Column(Date, default=date.today(), nullable=False)
     due_date = Column(Date, nullable=False)
     date_returned = Column(Date, nullable=True)
+
+    @staticmethod
+    def borrow_book(book, db, user):
+        borrow_date = date.today()
+        return_date = borrow_date + timedelta(days=7)
+        borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
+        book.count -= 1
+        db.add_all([borrow, book])
+        db.commit()
+        return return_date

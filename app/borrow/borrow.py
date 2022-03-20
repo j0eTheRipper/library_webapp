@@ -49,19 +49,9 @@ def borrow_get(book):
 def borrow_post(book, user, db):
     passwd_correct = check_password_hash(user.password, request.form['password'])
     if passwd_correct:
-        return_date = borrow_book(book, db, user)
+        return_date = Borrows.borrow_book(book, db, user)
         flash(f'Successfully borrowed {book.title}, please return by {return_date}', 'success')
         return redirect(url_for('home.home'))
     else:
         flash(f'Incorrect Password', 'danger')
         return redirect(url_for('borrow.borrow_get', book=book.id))
-
-
-def borrow_book(book, db, user):
-    borrow_date = date.today()
-    return_date = borrow_date + timedelta(days=7)
-    borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
-    book.count -= 1
-    db.add_all([borrow, book])
-    db.commit()
-    return return_date
