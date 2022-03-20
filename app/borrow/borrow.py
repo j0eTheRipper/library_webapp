@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from flask import Blueprint, render_template, request, session, url_for, flash, redirect
+from flask import Blueprint, render_template, request, session, url_for, flash, redirect, abort
 from werkzeug.security import check_password_hash
 from ..database_config.db import get_db
 from ..database_config.models import Books, Users, Borrows, Subject
@@ -11,6 +11,9 @@ bp = Blueprint('borrow', __name__, url_prefix='/borrow')
 @bp.route('/browse')
 @login_required
 def browse():
+    if session['is_admin']:
+        abort(403, 'Admins can not borrow from their own library!')
+
     subject_filter = request.args.get('subject')
     db = get_db()
 
@@ -26,6 +29,9 @@ def browse():
 @bp.route('/<int:book>', methods=['GET', 'POST'])
 @login_required
 def borrow_get(book):
+    if session['is_admin']:
+        abort(403, 'Admins can not borrow from their own library!')
+
     db = get_db()
     book = db.query(Books).filter_by(id=book).first()
 
