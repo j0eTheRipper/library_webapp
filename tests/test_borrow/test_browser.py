@@ -1,14 +1,19 @@
 URL = 'http://localhost/borrow/browse'
 
 
-def test_invalid_access(client):
+def test_invalid_access(client, authenticate):
     response = client.get(URL)
-    assert response.status_code == 302
+    assert response.status_code == 401
     assert response.headers['Location'] == 'http://localhost/login/'
+
+    authenticate.login('admin', 'admin')
+    response = client.get(URL)
+    assert response.status_code == 403
+    assert b'Admins can not borrow from their own library!' in response.data
 
 
 def test_valid_access(app, client, authenticate):
-    authenticate.login('admin', 'admin')
+    authenticate.login('user', 'user')
     response = client.get(URL)
     assert response.status_code == 200
 
@@ -23,7 +28,7 @@ def test_valid_access(app, client, authenticate):
 
 
 def test_subject_filter(app, client, authenticate):
-    authenticate.login('admin', 'admin')
+    authenticate.login('user', 'user')
     url = f'{URL}?subject=Story'
     response = client.get(url)
     assert response.status_code == 200

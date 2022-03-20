@@ -26,13 +26,18 @@ def db_test(state=False):
 @db_test(False)
 def test_invalid_access(app, client, authenticate):
     response = client.get(AVAILABLE_BOOK)
-    assert response.status_code == 302
+    assert response.status_code == 401
     assert response.headers['Location'] == 'http://localhost/login/'
+
+    authenticate.login('admin', 'admin')
+    response = client.get(AVAILABLE_BOOK)
+    assert response.status_code == 403
+    assert b'Admins can not borrow from their own library!' in response.data
 
 
 @db_test(False)
 def test_valid_but_unavailable(app, client, authenticate):
-    authenticate.login('admin', 'admin')
+    authenticate.login('user', 'user')
     response = client.get(UNAVAILABLE_BOOK)
     assert response.status_code == 302
     assert response.headers['Location'] == 'http://localhost/borrow/browse'
@@ -43,14 +48,14 @@ def test_valid_but_unavailable(app, client, authenticate):
 
 @db_test(False)
 def test_valid_and_available(app, client, authenticate):
-    authenticate.login('admin', 'admin')
+    authenticate.login('user', 'user')
     response = client.get(AVAILABLE_BOOK)
     assert response.status_code == 200
 
 
 @db_test(False)
 def test_wrong_borrow_password(app, client, authenticate):
-    authenticate.login('admin', 'admin')
+    authenticate.login('user', 'user')
     response = client.post(AVAILABLE_BOOK, data={'password': 'wrong_password'})
     assert response.status_code == 302
     assert response.headers['Location'] == AVAILABLE_BOOK
@@ -58,7 +63,7 @@ def test_wrong_borrow_password(app, client, authenticate):
 
 @db_test(True)
 def test_borrow(app, client, authenticate):
-    authenticate.login('admin', 'admin')
-    response = client.post(AVAILABLE_BOOK, data={'password': 'admin'})
+    authenticate.login('user', 'user')
+    response = client.post(AVAILABLE_BOOK, data={'password': 'user'})
     assert response.status_code == 302
     assert response.headers['Location'] == 'http://localhost/'
