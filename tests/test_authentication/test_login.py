@@ -47,3 +47,10 @@ def test_unregistered_username(authenticate, client):
 
     response = client.get(URL)
     assert b'This username is not registered' in response.data
+
+
+def test_logout(client, authenticate):
+    with client:
+        authenticate.login('user', 'user')
+        authenticate.logout()
+        assert not session.get('username')

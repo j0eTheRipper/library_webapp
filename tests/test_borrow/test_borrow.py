@@ -15,7 +15,7 @@ def db_test(state=False):
                 if state:
                     borrows = db.query(Borrows).all()
                     assert len(borrows) == 1
-                    assert borrows[0].book == 'The Fault In Our Stars'
+                    assert borrows[0].book == 'Clean Code'
                 else:
                     borrow = db.query(Borrows).first()
                     assert not borrow
