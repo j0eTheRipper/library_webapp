@@ -1,4 +1,6 @@
-AVAILABLE_BOOK = 'http://localhost/borrow/2'
+from datetime import date
+
+AVAILABLE_BOOK = 'http://localhost/borrow/3'
 UNAVAILABLE_BOOK = 'http://localhost/borrow/1'
 
 
@@ -14,10 +16,10 @@ def db_test(state=False):
                 db = get_db()
                 if state:
                     borrows = db.query(Borrows).all()
-                    assert len(borrows) == 1
-                    assert borrows[0].book == 'Clean Code'
+                    assert len(borrows) == 3
+                    assert borrows[-1].book == 'The C Programming Language'
                 else:
-                    borrow = db.query(Borrows).first()
+                    borrow = db.query(Borrows).filter_by(id=3).first()
                     assert not borrow
         return wrapper
     return pseudo_decorator

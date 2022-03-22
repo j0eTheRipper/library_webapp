@@ -61,4 +61,4 @@ def borrow_book(book, db, user):
     borrow, book = Borrows.borrow_book(book, user)
     db.add_all([borrow, book])
     db.commit()
-    return borrow.due_date
+    return borrow.date_returned

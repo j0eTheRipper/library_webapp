@@ -24,12 +24,15 @@ def app():
         user = Users(username='user', password=generate_password_hash('user'))
         user2 = Users(username='userx', password=generate_password_hash('abc'))
 
-        book = Books(title='some_book', subject='Math', author='me', count=0)
         book1 = Books(title='Clean Code', subject='Computer', author='Robert C. Martin', count=1)
         book2 = Books(title='The Fault In Our Stars', subject='Story', author='John Green', count=2)
+        book3 = Books(title='The C Programming Language', subject='Computer', author='me', count=2)
+
+        borrow1, book2 = Borrows.borrow_book(book2, user)
+        borrow2, book1 = Borrows.borrow_book(book1, user2)
 
         db = get_db()
-        db.add_all([admin, book, book1, book2, user, user2])
+        db.add_all([admin, book1, book2, book3, user, user2, borrow2, borrow1])
         db.commit()
         close_db()
 
@@ -71,19 +74,6 @@ class AuthActions:
         return self.__client.post('/signup/', data=data)
 
 
-class Borrow:
-    def __init__(self, client):
-        self.__client = client
-
-    def borrow(self, borrow_url, password):
-        return self.__client.post(borrow_url, data={'password': password})
-
-
 @fixture
 def authenticate(client):
     return AuthActions(client)
-
-
-@fixture
-def borrow(client):
-    return Borrow(client)
