@@ -1,3 +1,5 @@
+from datetime import date
+
 AVAILABLE_BOOK = 'http://localhost/borrow/3'
 UNAVAILABLE_BOOK = 'http://localhost/borrow/1'
 
