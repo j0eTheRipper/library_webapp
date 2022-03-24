@@ -30,7 +30,27 @@ def test_admin_view(app, client, authenticate):
 
         db = get_db()
         all_borrows = db.query(Borrows).all()
-        assert_borrows(response, all_borrows)
+
+        for borrow in all_borrows:
+            assert bytes(borrow.book, encoding='UTF8') in response.data
+            assert bytes(borrow.borrower, encoding='UTF8') in response.data
+
+
+def test_filters(app, client, authenticate):
+    authenticate.login('user', 'user')
+    returned_response = client.get(f'{URL}?filter=returned')
+    unreturned_response = client.get(f'{URL}?filter=unreturned')
+    with app.app_context():
+        from app.database_config.db import get_db
+        from app.database_config.models import Borrows
+
+        db = get_db()
+        user_borrows_query = db.query(Borrows).filter_by(borrower='user')
+        returned = user_borrows_query.filter(Borrows.date_returned).all()
+        unreturned = user_borrows_query.filter_by(date_returned=None).all()
+
+        assert_borrows(returned_response, returned)
+        assert_borrows(unreturned_response, unreturned)
 
 
 def assert_borrows(response, borrows, borrow_in_page=True):

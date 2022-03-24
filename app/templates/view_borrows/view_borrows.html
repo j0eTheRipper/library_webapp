@@ -4,24 +4,42 @@
 {% endblock %}
 {% block page_content %}
 <h1 align="center">Borrow History</h1>
-    <div class="container">
-        <table class="table table-hover table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Book</th>
-                <th scope="col">Date Borrowed</th>
-                <th scope="col">Due Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for borrow in borrows %}
+    <div class="browsing">
+        <div class="table">
+            <table class="table table-hover table-striped">
+                <thead>
                 <tr>
-                    <td>{{ borrow.book }}</td>
-                    <td>{{ borrow.date_borrowed }}</td>
-                    <td>{{ borrow.due_date }}</td>
+                    <th scope="col">Book</th>
+                    {% if session['is_admin'] %}
+                        <th>Borrower</th>
+                    {% endif %}
+                    <th scope="col">Date Borrowed</th>
+                    <th scope="col">Due Date</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for borrow in borrows %}
+                    <tr>
+                        <td>{{ borrow.book }}</td>
+                        {% if session['is_admin'] %}
+                            <td>{{ borrow.borrower }}</td>
+                        {% endif %}
+                        <td>{{ borrow.date_borrowed }}</td>
+                        <td>{{ borrow.due_date }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="filters" align="center">
+            <form method="get">
+                <select name="filter" onchange="this.form.submit()" class="filter">
+                    <option selected>Filter By Borrow state</option>
+                    <option value="returned">Returned</option>
+                    <option value="unreturned">Unreturned</option>
+                </select>
+                <a class="btn btn-primary filter" href="/view_borrows/" role="button">Reset Borrow Filter</a>
+            </form>
+        </div>
     </div>
 {% endblock %}
