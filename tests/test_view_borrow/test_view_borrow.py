@@ -51,6 +51,8 @@ def test_filters(app, client, authenticate):
 
         assert_borrows(returned_response, returned)
         assert_borrows(unreturned_response, unreturned)
+        assert_borrows(returned_response, unreturned, False)
+        assert_borrows(unreturned_response, returned, False)
 
 
 def assert_borrows(response, borrows, borrow_in_page=True):
