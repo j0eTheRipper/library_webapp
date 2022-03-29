@@ -6,7 +6,7 @@
 <h1 align="center">Borrow History</h1>
     <div class="browsing">
         <div class="table">
-            <table class="table table-hover table-striped">
+            <table class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">Book</th>
@@ -19,7 +19,19 @@
                 </thead>
                 <tbody>
                 {% for borrow in borrows %}
-                    <tr>
+                    {% if borrow.date_returned %}
+                        {% if borrow.date_returned >= borrow.due_date %}
+                            <tr class="table-warning">
+                        {% else %}
+                            <tr class="table-success">
+                        {% endif %}
+                    {% else %}
+                        {% if today >= borrow.due_date %}
+                            <tr class="table-danger">
+                        {% else %}
+                            <tr class="table-primary">
+                        {% endif %}
+                    {% endif %}
                         <td>{{ borrow.book }}</td>
                         {% if session['is_admin'] %}
                             <td>{{ borrow.borrower }}</td>
