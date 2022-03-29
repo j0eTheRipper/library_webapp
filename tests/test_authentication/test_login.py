@@ -15,7 +15,8 @@ def test_login_admin(client, authenticate):
 
         assert b'Browse Books' not in response.data
         assert b'Manage Books' in response.data
-        assert b'View Recent Borrows' in response.data
+        assert b'Unreturned Books (2)' in response.data
+        assert b'Borrow History' in response.data
         assert b'Logout' in response.data
 
 
@@ -29,7 +30,8 @@ def test_login_user(client, authenticate):
 
         assert b'Browse Books' in response.data
         assert b'Manage Books' not in response.data
-        assert b'View Recent Borrows' in response.data
+        assert b'Unreturned Books (1)' in response.data
+        assert b'Borrow History' in response.data
         assert b'Logout' in response.data
 
 
