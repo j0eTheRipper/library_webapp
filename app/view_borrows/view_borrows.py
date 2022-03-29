@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, session, url_for
-from ..database_config.db import get_db, close_db
+from datetime import date
+from ..database_config.db import get_db
 from ..database_config.models import Borrows
 
 
@@ -23,4 +24,4 @@ def view_borrows():
     else:
         borrows = borrows.filter_by(borrower=session['username']).all()
 
-    return render_template('view_borrows/view_borrows.html', borrows=borrows)
+    return render_template('view_borrows/view_borrows.html', borrows=borrows, today=date.today())
