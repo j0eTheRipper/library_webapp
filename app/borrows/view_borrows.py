@@ -4,14 +4,14 @@ from ..database_config.db import get_db
 from ..database_config.models import Borrows
 
 
-bp = Blueprint('view_borrows', __name__, url_prefix='/view_borrows')
+bp = Blueprint('borrows', __name__, url_prefix='/borrows')
 
 
-@bp.route('/')
+@bp.route('/history')
 def view_borrows():
     db = get_db()
     borrow_state_filter = request.args.get('filter')
-    borrows = db.query(Borrows)
+    borrows = db.query(Borrows).filter(Borrows.date_returned)
 
     if borrow_state_filter == 'returned':
         borrows = borrows.filter(Borrows.date_returned)
