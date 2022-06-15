@@ -1,8 +1,7 @@
-from os import remove
-
 from pytest import fixture
 from app import create_app
-from werkzeug.security import generate_password_hash
+from sqlite3 import connect
+from os import remove
 
 
 @fixture
@@ -15,28 +14,15 @@ def app():
     )
 
     with app.app_context():
-        from app.database_config.db import get_db, init_db, close_db
-        from app.database_config.models import Users, Books, Borrows
+        from app.database_config.db import init_db
 
         init_db()
-
-        admin = Users(username='admin', password=generate_password_hash('admin'), is_admin=True)
-        user = Users(username='user', password=generate_password_hash('user'))
-        user2 = Users(username='userx', password=generate_password_hash('abc'))
-
-        book1 = Books(title='Clean Code', subject='Computer', author='Robert C. Martin', count=1)
-        book2 = Books(title='The Fault In Our Stars', subject='Story', author='John Green', count=2)
-        book3 = Books(title='The C Programming Language', subject='Computer', author='me', count=2)
-
-        borrow1, book2 = Borrows.borrow_book(book2, user)
-        borrow2, book1 = Borrows.borrow_book(book1, user2)
-
-        db = get_db()
-        db.add_all([admin, book1, book2, book3, user, user2, borrow2, borrow1])
-        db.commit()
-        close_db()
+        with connect('testing.sqlite') as connection:
+            with open('test.sql') as script:
+                connection.executescript(script.read())
 
     yield app
+    remove('testing.sqlite')
 
 
 @fixture
