@@ -22,6 +22,10 @@ VALUES
 
 INSERT INTO books ("title", "subject", "author", "count")
 VALUES
+('1984', 'Story', 'George Orwell', 2);
+
+INSERT INTO books ("title", "subject", "author", "count")
+VALUES
 ('The C Programming Language', 'Computer', 'me', 2);
 
 --borrows--
@@ -31,11 +35,11 @@ VALUES
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
-('userx', 'The Fault In Our Stars', "25-04-2022", "02-05-2022", NULL);
+('userx', '1984', "25-04-2022", "02-05-2022", NULL);
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
-('user', 'The C Programming Language', "25-04-2022", "02-05-2022", "30-04-2022");
+('user', 'Clean Code', "25-04-2022", "02-05-2022", "30-04-2022");
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
@@ -43,8 +47,8 @@ VALUES
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
-('userx', 'Clean Code', "25-04-2022", "02-05-2022", "01-05-2022");
+('userx', 'The C Programming Language', "25-04-2022", "02-05-2022", "01-05-2022");
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
-('userx', 'Clean Code', "25-04-2022", "02-05-2022", "04-05-2022");
+('userx', 'The C Programming Language', "25-04-2022", "02-05-2022", "04-05-2022");

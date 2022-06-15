@@ -1,4 +1,10 @@
-URL = 'http://localhost/borrows/history'
+URL = 'http://localhost/borrows/history_returned'
+
+
+def test_unauthorized_accesses(client):
+    pre_login_response = client.get(URL)
+    assert pre_login_response.status_code == 401
+    assert pre_login_response.headers['Location'] == 'http://localhost/login/'
 
 
 def test_user_view(app, client, authenticate):
@@ -15,7 +21,7 @@ def test_user_view(app, client, authenticate):
         user_borrows = db.query(Borrows).filter_by(borrower='user')
         returned_borrows = user_borrows.filter(Borrows.date_returned).all()
         unreturned_borrows = user_borrows.filter_by(date_returned=None).all()
-        other_borrows = db.query(Borrows).filter(Borrows.borrower != 'user').all()
+        other_borrows = db.query(Borrows).filter(Borrows.borrower == 'userx').all()
 
         assert_borrows(response, returned_borrows)
         assert_borrows(response, unreturned_borrows, False)
@@ -40,24 +46,24 @@ def test_admin_view(app, client, authenticate):
         assert_borrows(response, unreturned_borrows, False)
 
 
-# def test_filters(app, client, authenticate):
-#     authenticate.login('user', 'user')
-#     returned_response = client.get(f'{URL}?filter=overdue')
-#     unreturned_response = client.get(f'{URL}?filter=on_time')
-#
-#     with app.app_context():
-#         from app.database_config.db import get_db
-#         from app.database_config.models import Borrows
-#
-#         db = get_db()
-#         user_borrows_query = db.query(Borrows).filter_by(borrower='user')
-#         overdue = user_borrows_query.filter(Borrows.date_returned).all()
-#         unreturned = user_borrows_query.filter_by(date_returned=None).all()
-#
-#         assert_borrows(returned_response, returned)
-#         assert_borrows(unreturned_response, unreturned)
-#         assert_borrows(returned_response, unreturned, False)
-#         assert_borrows(unreturned_response, returned, False)
+def test_filters(app, client, authenticate):
+    authenticate.login('user', 'user')
+    overdue_filter_response = client.get(f'{URL}?filter=overdue')
+    on_time_filter_response = client.get(f'{URL}?filter=on_time')
+
+    with app.app_context():
+        from app.database_config.db import get_db
+        from app.database_config.models import Borrows
+
+        db = get_db()
+        user_borrows_query = db.query(Borrows).filter_by(borrower='user').filter(Borrows.date_returned)
+        overdue = user_borrows_query.filter(Borrows.date_returned > Borrows.due_date).all()
+        on_time = user_borrows_query.filter(Borrows.date_returned <= Borrows.due_date).all()
+
+        assert_borrows(overdue_filter_response, overdue)
+        assert_borrows(overdue_filter_response, on_time, False)
+        assert_borrows(on_time_filter_response, on_time)
+        assert_borrows(on_time_filter_response, overdue, False)
 
 
 def assert_borrows(response, borrows, borrow_in_page=True):

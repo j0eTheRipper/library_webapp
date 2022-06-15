@@ -15,7 +15,7 @@ def db_test(state=False):
                 if state:
                     borrows = db.query(Borrows).all()
                     assert len(borrows) == 7
-                    assert borrows[-1].book == 'The C Programming Language'
+                    assert borrows[-1].book == '1984'
                 else:
                     borrow = db.query(Borrows).filter_by(id=7).first()
                     assert not borrow
