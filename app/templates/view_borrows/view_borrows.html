@@ -15,12 +15,13 @@
                     {% endif %}
                     <th scope="col">Date Borrowed</th>
                     <th scope="col">Due Date</th>
+                    <th scope="col">Date Returned</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for borrow in borrows %}
                     {% if borrow.date_returned %}
-                        {% if borrow.date_returned >= borrow.due_date %}
+                        {% if borrow.date_returned > borrow.due_date %}
                             <tr class="table-warning">
                         {% else %}
                             <tr class="table-success">
@@ -38,6 +39,7 @@
                         {% endif %}
                         <td>{{ borrow.date_borrowed }}</td>
                         <td>{{ borrow.due_date }}</td>
+                        <td>{{ borrow.date_returned }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -46,11 +48,11 @@
         <div class="filters" align="center">
             <form method="get">
                 <select name="filter" onchange="this.form.submit()" class="filter">
-                    <option selected>Filter By Borrow state</option>
-                    <option value="returned">Returned</option>
-                    <option value="unreturned">Unreturned</option>
+                    <option selected>Filter by return time</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="on_time">On time</option>
                 </select>
-                <a class="btn btn-primary filter" href="/view_borrows/" role="button">Reset Borrow Filter</a>
+                <a class="btn btn-primary filter" href="/borrows/history_returned" role="button">Reset Return Time Filter</a>
             </form>
         </div>
     </div>
