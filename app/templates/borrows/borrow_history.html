@@ -15,6 +15,7 @@
                     {% endif %}
                     <th scope="col">Date Borrowed</th>
                     <th scope="col">Due Date</th>
+                    <th scope="col">Date Returned</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -26,7 +27,7 @@
                             <tr class="table-success">
                         {% endif %}
                     {% else %}
-                        {% if today >= borrow.due_date %}
+                        {% if borrow.due_date <= today %}
                             <tr class="table-danger">
                         {% else %}
                             <tr class="table-primary">
@@ -38,6 +39,11 @@
                         {% endif %}
                         <td>{{ borrow.date_borrowed }}</td>
                         <td>{{ borrow.due_date }}</td>
+                        {% if borrow.date_returned %}
+                            <td>{{ borrow.date_returned }}</td>
+                        {% else %}
+                            <td> -- </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -50,7 +56,7 @@
                     <option value="returned">Returned</option>
                     <option value="unreturned">Unreturned</option>
                 </select>
-                <a class="btn btn-primary filter" href="/view_borrows/" role="button">Reset Borrow Filter</a>
+                <a class="btn btn-primary filter" href="/borrows/history" role="button">Reset Borrow Filter</a>
             </form>
         </div>
     </div>

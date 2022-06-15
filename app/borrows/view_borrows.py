@@ -11,7 +11,7 @@ bp = Blueprint('borrows', __name__, url_prefix='/borrows')
 def view_borrows():
     db = get_db()
     borrow_state_filter = request.args.get('filter')
-    borrows = db.query(Borrows).filter(Borrows.date_returned)
+    borrows = db.query(Borrows)
 
     if borrow_state_filter == 'returned':
         borrows = borrows.filter(Borrows.date_returned)
@@ -24,4 +24,4 @@ def view_borrows():
     else:
         borrows = borrows.filter_by(borrower=session['username']).all()
 
-    return render_template('view_borrows/view_borrows.html', borrows=borrows, today=date.today())
+    return render_template('borrows/borrow_history.html', borrows=borrows, today=date.today())
