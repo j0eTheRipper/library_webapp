@@ -1,10 +1,7 @@
-from os.path import abspath
 from pytest import fixture
 from app import create_app
 from sqlite3 import connect
 from os import remove
-
-TEST_DIR_PATH = abspath('.')
 
 
 @fixture
@@ -21,7 +18,7 @@ def app():
 
         init_db()
         with connect('testing.sqlite') as connection:
-            with open(f'{TEST_DIR_PATH}/test.sql') as script:
+            with open(f'test.sql') as script:
                 connection.executescript(script.read())
 
     yield app
