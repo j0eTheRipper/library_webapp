@@ -1,3 +1,5 @@
+from tests.test_view_borrow.assert_borrows import assert_borrows
+
 URL = 'http://localhost/borrows/history_returned'
 
 
@@ -21,7 +23,7 @@ def test_user_view(app, client, authenticate):
         user_borrows = db.query(Borrows).filter_by(borrower='user')
         returned_borrows = user_borrows.filter(Borrows.date_returned).all()
         unreturned_borrows = user_borrows.filter_by(date_returned=None).all()
-        other_borrows = db.query(Borrows).filter(Borrows.borrower == 'userx').all()
+        other_borrows = db.query(Borrows).filter(Borrows.borrower != 'user').all()
 
         assert_borrows(response, returned_borrows)
         assert_borrows(response, unreturned_borrows, False)
@@ -64,11 +66,3 @@ def test_filters(app, client, authenticate):
         assert_borrows(overdue_filter_response, on_time, False)
         assert_borrows(on_time_filter_response, on_time)
         assert_borrows(on_time_filter_response, overdue, False)
-
-
-def assert_borrows(response, borrows, borrow_in_page=True):
-    for borrow in borrows:
-        if borrow_in_page:
-            assert bytes(borrow.book, encoding='UTF8') in response.data
-        else:
-            assert not bytes(borrow.book, encoding='UTF8') in response.data

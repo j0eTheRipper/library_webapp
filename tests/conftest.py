@@ -18,7 +18,7 @@ def app():
 
         init_db()
         with connect('testing.sqlite') as connection:
-            with open('test.sql') as script:
+            with open('/home/j0e/Projects/Python/Web/Flask/library_webapp/tests/test.sql') as script:
                 connection.executescript(script.read())
 
     yield app

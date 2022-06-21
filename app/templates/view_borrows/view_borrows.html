@@ -20,18 +20,10 @@
                 </thead>
                 <tbody>
                 {% for borrow in borrows %}
-                    {% if borrow.date_returned %}
-                        {% if borrow.date_returned > borrow.due_date %}
-                            <tr class="table-warning">
-                        {% else %}
-                            <tr class="table-success">
-                        {% endif %}
+                    {% if borrow.date_returned > borrow.due_date %}
+                        <tr class="table-warning">
                     {% else %}
-                        {% if today >= borrow.due_date %}
-                            <tr class="table-danger">
-                        {% else %}
-                            <tr class="table-primary">
-                        {% endif %}
+                        <tr class="table-success">
                     {% endif %}
                         <td>{{ borrow.book }}</td>
                         {% if session['is_admin'] %}
