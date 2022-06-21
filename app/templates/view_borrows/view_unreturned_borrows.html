@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block page_title %}
+    view borrows
+{% endblock %}
+{% block page_content %}
+<h1 align="center">Unreturned Borrows History</h1>
+    <div>
+        <div class="table">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Book</th>
+                    {% if session['is_admin'] %}
+                        <th>Borrower</th>
+                    {% endif %}
+                    <th scope="col">Date Borrowed</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Time Left (days)</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for borrow in borrows %}
+                    {% if today > borrow.due_date %}
+                        <tr class="table-danger">
+                    {% else %}
+                        <tr class="table-primary">
+                    {% endif %}
+                        <td>{{ borrow.book }}</td>
+                        {% if session['is_admin'] %}
+                            <td>{{ borrow.borrower }}</td>
+                        {% endif %}
+                        <td>{{ borrow.date_borrowed }}</td>
+                        <td>{{ borrow.due_date }}</td>
+                        <td>{{ (borrow.due_date - today).days }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
