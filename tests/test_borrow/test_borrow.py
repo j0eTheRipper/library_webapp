@@ -61,6 +61,17 @@ def test_wrong_borrow_password(app, client, authenticate):
     assert response.headers['Location'] == AVAILABLE_BOOK
 
 
+@db_test(False)
+def test_borrowing_an_unreturned_book(app, client, authenticate):
+    authenticate.login('user', 'user')
+    re_borrow_response = client.get('http://localhost/borrow/2')
+    assert re_borrow_response.status_code == 302
+    assert re_borrow_response.headers['Location'] == 'http://localhost/borrow/browse'
+
+    response = client.get('http://localhost/borrow/browse')
+    assert b'You already have that book!' in response.data
+
+
 @db_test(True)
 def test_borrow(app, client, authenticate):
     authenticate.login('user', 'user')

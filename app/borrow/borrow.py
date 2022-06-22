@@ -34,10 +34,15 @@ def borrow_get(book):
 
     db = get_db()
     book = db.query(Books).filter_by(id=book).first()
+    users_borrows = db.query(Borrows).filter_by(borrower=session['username']).filter_by(date_returned=None).all()
+    users_borrows = [borrow.book for borrow in users_borrows]
 
     if request.method == 'GET':
         if book.count <= 0:
             flash('The book you selected is not available right now!', 'danger')
+            return redirect(url_for('borrow.browse'))
+        elif book.title in users_borrows:
+            flash('You already have that book!', 'danger')
             return redirect(url_for('borrow.browse'))
         else:
             return render_template('borrow/borrow.html', title=book.title)
