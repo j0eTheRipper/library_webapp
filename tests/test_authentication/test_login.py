@@ -49,3 +49,16 @@ def test_unregistered_username(authenticate, client):
 
     response = client.get(URL)
     assert b'This username is not registered' in response.data
+
+
+def test_incomplete_request(client):
+    data_list = [{'username': '', 'password': 'abc'},
+                 {'username': 'abc', 'password': ''},
+                 {'username': '', 'password': ''}]
+
+    for data in data_list:
+        response = client.post(URL, data=data)
+        assert response.headers['Location'] == URL
+
+        response = client.get(URL)
+        assert b'Please provide a username and a password' in response.data

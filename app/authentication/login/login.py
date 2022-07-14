@@ -20,6 +20,10 @@ def login_post():
     username = request.form.get('username')
     password = request.form.get('password')
 
+    if not (username and password):
+        flash('Please provide a username and a password', 'danger')
+        return redirect(url_for('login.login_get'))
+
     db = get_db()
     user_query = db.query(Users).filter_by(username=username).first()
     close_db()

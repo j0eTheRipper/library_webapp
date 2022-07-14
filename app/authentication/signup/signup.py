@@ -18,6 +18,10 @@ def signup_post():
     password = request.form.get('password')
     password_confirmation = request.form.get('password_confirmation')
 
+    if not (username and password and password_confirmation):
+        flash('Please provide a username and a password')
+        return redirect(url_for('signup.signup_get'))
+
     if check_for_errors(password, password_confirmation, username):
         return redirect(url_for('signup.signup_get'))
     else:
