@@ -1,3 +1,5 @@
+from datetime import date
+
 from .assert_borrows import assert_borrows
 URL = 'http://localhost/borrows/history_unreturned'
 
@@ -47,21 +49,21 @@ def test_admin_view(app, client, authenticate):
         assert_borrows(response, returned_borrows, False)
 
 
-# def test_filters(app, client, authenticate):
-#     authenticate.login('user', 'user')
-#     overdue_filter_response = client.get(f'{URL}?filter=overdue')
-#     on_time_filter_response = client.get(f'{URL}?filter=on_time')
-#
-#     with app.app_context():
-#         from app.database_config.db import get_db
-#         from app.database_config.models import Borrows
-#
-#         db = get_db()
-#         user_borrows_query = db.query(Borrows).filter_by(borrower='user').filter(Borrows.date_returned)
-#         overdue = user_borrows_query.filter(Borrows.date_returned > Borrows.due_date).all()
-#         on_time = user_borrows_query.filter(Borrows.date_returned <= Borrows.due_date).all()
-#
-#         assert_borrows(overdue_filter_response, overdue)
-#         assert_borrows(overdue_filter_response, on_time, False)
-#         assert_borrows(on_time_filter_response, on_time)
-#         assert_borrows(on_time_filter_response, overdue, False)
+def test_filters(app, client, authenticate):
+    authenticate.login('user', 'user')
+    overdue_filter_response = client.get(f'{URL}?filter=overdue')
+    on_time_filter_response = client.get(f'{URL}?filter=on_time')
+
+    with app.app_context():
+        from app.database_config.db import get_db
+        from app.database_config.models import Borrows
+
+        db = get_db()
+        user_borrows_query = db.query(Borrows).filter_by(borrower='user').filter_by(date_returned=None)
+        overdue = user_borrows_query.filter(date.today() > Borrows.due_date).all()
+        on_time = user_borrows_query.filter(date.today() <= Borrows.due_date).all()
+
+        assert_borrows(overdue_filter_response, overdue)
+        assert_borrows(overdue_filter_response, on_time, False)
+        assert_borrows(on_time_filter_response, on_time)
+        assert_borrows(on_time_filter_response, overdue, False)

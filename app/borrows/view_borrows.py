@@ -25,8 +25,10 @@ def view_returned_borrows():
 def view_unreturned_borrows():
     db = get_db()
     borrows = db.query(Borrows).filter_by(date_returned=None)
+    filters = request.args.get('filter')
+    # print(filters)
 
-    borrows = process_borrows(borrows)
+    borrows = process_borrows(borrows, filters)
 
     return render_template('view_borrows/view_unreturned_borrows.html', borrows=borrows, today=date.today())
 
@@ -34,7 +36,7 @@ def view_unreturned_borrows():
 def process_borrows(borrows, filters=None):
     if filters:
         if filters == 'overdue':
-            borrows = borrows.filter(Borrows.date_returned > Borrows.due_date)
+            borrows = borrows.filter(date.today() > Borrows.due_date)
         elif filters == 'on_time':
             borrows = borrows.filter(Borrows.date_returned <= Borrows.due_date)
 
