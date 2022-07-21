@@ -4,7 +4,7 @@
 {% endblock %}
 {% block page_content %}
 <h1 align="center">Unreturned Borrows History</h1>
-    <div>
+    <div class="browsing">
         <div class="table">
             <table class="table table-hover">
                 <thead>
@@ -36,6 +36,16 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="filters" align="center">
+            <form method="get">
+                <select name="filter" onchange="this.form.submit()" class="filter">
+                    <option selected>Filter by return time</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="on_time">On time</option>
+                </select>
+                <a class="btn btn-primary filter" href="/borrows/history_unreturned" role="button">Reset Return Time Filter</a>
+            </form>
         </div>
     </div>
 {% endblock %}
