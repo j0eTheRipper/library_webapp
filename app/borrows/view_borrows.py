@@ -15,9 +15,9 @@ def view_returned_borrows():
     borrows = db.query(Borrows).filter(Borrows.date_returned)
     filters = request.args.get('filter')
 
-    borrows = process_borrows(borrows, filters)
+    borrows = process_borrows(borrows, True, filters)
 
-    return render_template('view_borrows/view_borrows.html', borrows=borrows, today=date.today())
+    return render_template('view_borrows/view_borrows.html', borrows=borrows)
 
 
 @bp.route('/history_unreturned')
@@ -26,19 +26,27 @@ def view_unreturned_borrows():
     db = get_db()
     borrows = db.query(Borrows).filter_by(date_returned=None)
     filters = request.args.get('filter')
-    # print(filters)
+    print(filters)
 
-    borrows = process_borrows(borrows, filters)
+    borrows = process_borrows(borrows, False, filters)
 
     return render_template('view_borrows/view_unreturned_borrows.html', borrows=borrows, today=date.today())
 
 
-def process_borrows(borrows, filters=None):
+def process_borrows(borrows, is_returned, filters=None):
     if filters:
         if filters == 'overdue':
-            borrows = borrows.filter(date.today() > Borrows.due_date)
+            # borrows = borrows.filter(Borrows.date_returned if is_returned else date.today() > Borrows.due_date)
+            if is_returned:
+                borrows = borrows.filter(Borrows.date_returned > Borrows.due_date)
+            else:
+                borrows = borrows.filter(date.today() > Borrows.due_date)
         elif filters == 'on_time':
-            borrows = borrows.filter(Borrows.date_returned <= Borrows.due_date)
+            # borrows = borrows.filter(Borrows.date_returned if is_returned else date.today() <= Borrows.due_date)
+            if is_returned:
+                borrows = borrows.filter(Borrows.date_returned <= Borrows.due_date)
+            else:
+                borrows = borrows.filter(date.today() <= Borrows.due_date)
 
     if session.get('is_admin'):
         borrows = borrows.all()
