@@ -18,6 +18,7 @@ def test_login_admin(client, authenticate):
         assert b'Unreturned Books (2)' in response.data
         assert b'Borrow History' in response.data
         assert b'Logout' in response.data
+        assert b'You have 2 books that need to be returned!' not in response.data
 
 
 def test_login_user(client, authenticate):

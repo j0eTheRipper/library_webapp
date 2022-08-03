@@ -35,11 +35,12 @@ def get_unreturned_books(is_admin):
     expired = unreturned.filter(today >= Borrows.due_date).all()
     unreturned = unreturned.all()
     if expired:
-        message = Markup(
-            f'You have {len(expired)} books that need to be returned! Please ' +
-            f'<a href="/borrows/history_unreturned">return</a>'
-        )
-        flash(message, 'warning')
+        if not is_admin:
+            message = Markup(
+                f'You have {len(expired)} books that need to be returned! Please ' +
+                f'<a href="/borrows/history_unreturned">return</a>'
+            )
+            flash(message, 'warning')
 
     close_db()
     return unreturned
