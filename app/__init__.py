@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_bootstrap import Bootstrap
 from os import makedirs
 from os.path import isdir, join
 
@@ -18,8 +17,6 @@ def create_app(test_config=None):
 
     if not isdir(app.instance_path):
         makedirs(app.instance_path)
-
-    Bootstrap(app)
 
     with app.app_context():
         from .database_config import db
