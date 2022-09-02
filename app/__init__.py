@@ -33,7 +33,7 @@ def create_app(test_config=None):
     from .borrow import borrow_bp
     app.register_blueprint(borrow_bp)
 
-    from .borrows import borrows_bp
+    from .borrow_history import borrows_bp
     app.register_blueprint(borrows_bp)
 
     return app

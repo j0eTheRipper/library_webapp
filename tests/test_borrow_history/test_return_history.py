@@ -1,4 +1,4 @@
-from tests.test_view_borrow.assert_borrows import assert_borrows
+from tests.test_borrow_history.assert_borrows import assert_borrows
 
 URL = 'http://localhost/borrows/history_returned'
 
