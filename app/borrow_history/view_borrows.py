@@ -36,13 +36,11 @@ def view_unreturned_borrows():
 def process_borrows(borrows, is_returned, filters=None):
     if filters:
         if filters == 'overdue':
-            # borrows = borrows.filter(Borrows.date_returned if is_returned else date.today() > Borrows.due_date)
             if is_returned:
                 borrows = borrows.filter(Borrows.date_returned > Borrows.due_date)
             else:
                 borrows = borrows.filter(date.today() > Borrows.due_date)
         elif filters == 'on_time':
-            # borrows = borrows.filter(Borrows.date_returned if is_returned else date.today() <= Borrows.due_date)
             if is_returned:
                 borrows = borrows.filter(Borrows.date_returned <= Borrows.due_date)
             else:

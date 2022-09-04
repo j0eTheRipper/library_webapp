@@ -1,10 +1,11 @@
+from tests.repeated_tests.repeated_request_tests import *
+from tests.test_borrow.testing_functions import assert_books
+
 URL = 'http://localhost/borrow/browse'
 
 
 def test_invalid_access(client, authenticate):
-    response = client.get(URL)
-    assert response.status_code == 401
-    assert response.headers['Location'] == 'http://localhost/login/'
+    unauthorized_access(client, URL)
 
     authenticate.login('admin', 'admin')
     response = client.get(URL)
@@ -13,9 +14,7 @@ def test_invalid_access(client, authenticate):
 
 
 def test_valid_access(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.get(URL)
-    assert response.status_code == 200
+    response = request_user_page(client, authenticate, URL, 'user', 'user')
 
     with app.app_context():
         from app.database_config.db import get_db
@@ -28,10 +27,8 @@ def test_valid_access(app, client, authenticate):
 
 
 def test_subject_filter(app, client, authenticate):
-    authenticate.login('user', 'user')
     url = f'{URL}?subject=Story'
-    response = client.get(url)
-    assert response.status_code == 200
+    response = request_user_page(client, authenticate, url, 'user', 'user')
 
     with app.app_context():
         from app.database_config.db import get_db
@@ -43,11 +40,3 @@ def test_subject_filter(app, client, authenticate):
 
         assert_books(response, stories)
         assert_books(response, all_books, False)
-
-
-def assert_books(response, book_list, book_in_page=True):
-    for book in book_list:
-        if book_in_page:
-            assert bytes(book.title, encoding='UTF8') in response.data
-        else:
-            assert not bytes(book.title, encoding='UTF8') in response.data

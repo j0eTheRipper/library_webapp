@@ -1,33 +1,13 @@
+from tests.repeated_tests.repeated_request_tests import *
+from tests.test_borrow.testing_functions import db_test
+
 AVAILABLE_BOOK = 'http://localhost/borrow/3'
 UNAVAILABLE_BOOK = 'http://localhost/borrow/1'
 
 
-def db_test(state=False):
-    def pseudo_decorator(func):
-        def wrapper(app, client, authenticate):
-            func(app, client, authenticate)
-
-            with app.app_context():
-                from app.database_config.db import get_db
-                from app.database_config.models import Borrows
-
-                db = get_db()
-                if state:
-                    borrows = db.query(Borrows).all()
-                    assert len(borrows) == 7
-                    assert borrows[-1].book == '1984'
-                else:
-                    borrow = db.query(Borrows).filter_by(id=7).first()
-                    assert not borrow
-        return wrapper
-    return pseudo_decorator
-
-
 @db_test(False)
 def test_invalid_access(app, client, authenticate):
-    response = client.get(AVAILABLE_BOOK)
-    assert response.status_code == 401
-    assert response.headers['Location'] == 'http://localhost/login/'
+    unauthorized_access(client, AVAILABLE_BOOK)
 
     authenticate.login('admin', 'admin')
     response = client.get(AVAILABLE_BOOK)
@@ -48,9 +28,7 @@ def test_valid_but_unavailable(app, client, authenticate):
 
 @db_test(False)
 def test_valid_and_available(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.get(AVAILABLE_BOOK)
-    assert response.status_code == 200
+    request_user_page(client, authenticate, AVAILABLE_BOOK, 'user', 'user')
 
 
 @db_test(False)

@@ -1,19 +1,16 @@
 from datetime import date
+from tests.repeated_tests.repeated_request_tests import *
 
 from .assert_borrows import assert_borrows
 URL = 'http://localhost/borrows/history_unreturned'
 
 
 def test_unauthorized_accesses(client):
-    pre_login_response = client.get(URL)
-    assert pre_login_response.status_code == 401
-    assert pre_login_response.headers['Location'] == 'http://localhost/login/'
+    unauthorized_access(client, URL)
 
 
 def test_user_view(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.get(URL)
-    assert response.status_code == 200
+    response = request_user_page(client, authenticate, URL, 'user', 'user')
 
     with app.app_context():
         from app.database_config.db import get_db

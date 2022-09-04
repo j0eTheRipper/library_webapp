@@ -1,18 +1,16 @@
 from tests.test_borrow_history.assert_borrows import assert_borrows
+from tests.repeated_tests.repeated_request_tests import unauthorized_access
+from tests.repeated_tests.repeated_request_tests import request_user_page
 
 URL = 'http://localhost/borrows/history_returned'
 
 
 def test_unauthorized_accesses(client):
-    pre_login_response = client.get(URL)
-    assert pre_login_response.status_code == 401
-    assert pre_login_response.headers['Location'] == 'http://localhost/login/'
+    unauthorized_access(client, URL)
 
 
 def test_user_view(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.get(URL)
-    assert response.status_code == 200
+    response = request_user_page(client, authenticate, URL, 'user', 'user')
 
     with app.app_context():
         from app.database_config.db import get_db
@@ -31,9 +29,7 @@ def test_user_view(app, client, authenticate):
 
 
 def test_admin_view(app, client, authenticate):
-    authenticate.login('admin', 'admin')
-    response = client.get(URL)
-    assert response.status_code == 200
+    response = request_user_page(client, authenticate, URL, 'admin', 'admin')
 
     with app.app_context():
         from app.database_config.db import get_db
