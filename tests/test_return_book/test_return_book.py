@@ -8,10 +8,10 @@ def test_guest_access(client, authenticate):
 
 
 def test_admin_access(client, authenticate):
-    authenticate('admin', 'admin')
+    authenticate.login('admin', 'admin')
     response = client.get(URL)
     assert response.status_code == 302
-    assert response.headers['Location'] == 'https://localhost/borrows/history_unreturned'
+    assert response.headers['Location'] == 'http://localhost/borrows/history_unreturned'
 
 
 def test_user_access(client, authenticate):
@@ -19,9 +19,9 @@ def test_user_access(client, authenticate):
 
 
 def test_invalid_credentials(client, authenticate, app):
-    request_user_page(client, authenticate, URL, 'user', 'user')
-    response = client.post(URL, {'password': 'wrong_passwd'})
-    assert response.status == 302
+    authenticate.login('user', 'user')
+    response = client.post(URL, data={'password': 'wrong_passwd'})
+    assert response.status_code == 302
     assert response.headers['Location'] == URL
     assert b'Incorrect password, please retry.' in client.get(URL).data
 
@@ -37,18 +37,20 @@ def test_invalid_credentials(client, authenticate, app):
 
 
 def test_valid_credentials(client, authenticate, app):
-    request_user_page(client, authenticate, URL, 'user', 'user')
-    response = client.post(URL, {'password': 'user'})
-    assert response.status == 302
-    assert response.headers['Location'] == 'https://localhost/borrows/history_unreturned'
+    authenticate.login('user', 'user')
+    response = client.post(URL, data={'password': 'user'})
+    assert response.status_code == 302
+    assert response.headers['Location'] == 'http://localhost/borrows/history_unreturned'
     assert b'Returned Successfully' in client.get(response.headers["Location"]).data
 
     with app.app_context():
         from app.database_config.db import get_db
-        from app.database_config.models import Borrows
+        from app.database_config.models import Borrows, Books
 
         db = get_db()
 
         user_borrows = db.query(Borrows).filter_by(borrower='user')
         first_borrow = user_borrows.filter_by(id=1).first()
+        book = db.query(Books).filter_by(title=first_borrow.book).first()
         assert first_borrow.date_returned
+        assert book.count == 3

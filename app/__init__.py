@@ -36,4 +36,7 @@ def create_app(test_config=None):
     from .borrow_history import borrows_bp
     app.register_blueprint(borrows_bp)
 
+    from app.return_book import return_book_bp
+    app.register_blueprint(return_book_bp)
+
     return app

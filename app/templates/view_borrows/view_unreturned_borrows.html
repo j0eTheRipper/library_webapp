@@ -21,9 +21,9 @@
                 <tbody>
                 {% for borrow in borrows %}
                     {% if today > borrow.due_date %}
-                        <tr class="table-danger">
+                        <tr class="table-danger" onclick="window.location = '/return/{{borrow.id}}'">
                     {% else %}
-                        <tr class="table-primary">
+                        <tr class="table-primary" onclick="window.location = '/return/{{borrow.id}}'">
                     {% endif %}
                         <td>{{ borrow.book }}</td>
                         {% if session['is_admin'] %}

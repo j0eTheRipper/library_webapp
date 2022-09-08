@@ -4,7 +4,6 @@ from sqlalchemy import create_engine, Column, Integer, ForeignKey, Boolean, Date
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from flask import current_app
 
-
 engine = create_engine('sqlite:///' + current_app.config.get('DATABASE'))
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
@@ -19,7 +18,7 @@ class Subject(Base):
 
 class Books(Base):
     __tablename__ = 'books'
-    
+
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True, unique=True, nullable=False)
     subject = Column(String, ForeignKey('subjects.subject'), nullable=False)
@@ -58,3 +57,9 @@ class Borrows(Base):
         borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
         book.count -= 1
         return borrow, book
+
+    def return_book(self, book):
+        date_returned = date.today()
+        self.date_returned = date_returned
+        book.count += 1
+        return self, book
