@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash, Markup
-from werkzeug.security import generate_password_hash
-from ...database_config.db import get_db, close_db
-from ...database_config.models import Users
+from app.database_config.db import get_db, close_db
+from app.database_config.models import Users
 
 
 bp = Blueprint('signup', __name__, url_prefix='/signup')
@@ -18,17 +17,19 @@ def signup_post():
     password = request.form.get('password')
     password_confirmation = request.form.get('password_confirmation')
 
-    if not (username and password and password_confirmation):
-        flash('Please provide a username and a password')
+    input_errors = check_for_errors(password, password_confirmation, username)
+
+    if input_errors:
         return redirect(url_for('signup.signup_get'))
 
-    if check_for_errors(password, password_confirmation, username):
-        return redirect(url_for('signup.signup_get'))
-    else:
-        return register_user(password, username)
+    return register_user(password, username)
 
 
 def check_for_errors(password, password_confirmation, username):
+    if not (username and password and password_confirmation):
+        flash('Please provide a username and a password')
+        return True
+
     db = get_db()
     user_exists = db.query(Users).filter_by(username=username).first()
     close_db()
@@ -51,20 +52,20 @@ def check_for_errors(password, password_confirmation, username):
 
 
 def register_user(password, username):
-    passwd = generate_password_hash(password)
-    user = Users(username=username, password=passwd)
-    session['username'] = username
-    session['is_admin'] = False
-
+    user = Users.create_user(username, password)
     add_to_db(user)
+    register_user_to_session(user)
 
-    flash(f'Welcome, {username}, you made it!', 'success')
     return redirect(url_for('home.home'))
+
+
+def register_user_to_session(user: Users):
+    session['username'] = user.username
+    session['is_admin'] = user.is_admin
+    flash(f'Welcome, {user.username}, you made it!', 'success')
 
 
 def add_to_db(user):
     db = get_db()
     db.add(user)
     db.commit()
-    close_db()
-

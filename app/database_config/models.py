@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from sqlalchemy import create_engine, Column, Integer, ForeignKey, Boolean, Date, String
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from flask import current_app
+from werkzeug.security import generate_password_hash
 
 engine = create_engine('sqlite:///' + current_app.config.get('DATABASE'))
 Base = declarative_base(bind=engine)
@@ -38,6 +39,12 @@ class Users(Base):
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     borrows = relationship('Borrows', backref='users')
+
+    @staticmethod
+    def create_user(username, password, is_admin=False):
+        passwd = generate_password_hash(password)
+        user = Users(username=username, password=passwd, is_admin=is_admin)
+        return user
 
 
 class Borrows(Base):
