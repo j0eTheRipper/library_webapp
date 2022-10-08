@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash, Markup
 from app.database_config.db import get_db, close_db
 from app.database_config.models import Users
+from app.shared_functions import login_required, admin_only
 
 
 bp = Blueprint('signup', __name__, url_prefix='/signup')
 
 
 @bp.route('/')
+@login_required
+@admin_only
 def signup_get():
     return render_template('authentication/signup.html')
 

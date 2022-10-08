@@ -13,10 +13,10 @@ def test_login_admin(client, authenticate):
         response = client.get('http://localhost/')
         assert session['is_admin']
 
-        assert b'Browse Books' not in response.data
         assert b'Manage Books' in response.data
         assert b'Unreturned Books (2)' in response.data
         assert b'Borrow History' in response.data
+        assert b'Manage Users' in response.data
         assert b'Logout' in response.data
         assert b'You have 2 books that need to be returned!' not in response.data
 
@@ -49,7 +49,7 @@ def test_unregistered_username(authenticate, client):
     assert response.headers['Location'] == URL
 
     response = client.get(URL)
-    assert b'This username is not registered' in response.data
+    assert b'This username is not registered! Please contact the admins.' in response.data
 
 
 def test_incomplete_request(client):

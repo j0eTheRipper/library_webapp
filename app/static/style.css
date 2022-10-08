@@ -2,6 +2,12 @@ p {
     font-size: 2em;
 }
 
+body {
+	background-image: linear-gradient( yellow, darkblue);
+	background-repeat: no-repeat;
+	height: 100%;
+}
+
 .content {
     display: grid;
     justify-content: center;

@@ -44,7 +44,7 @@ def validate_credentials(password, user_query, username):
     if user_query:
         return validate_password(password, user_query, username)
     else:
-        message = Markup('This username is not registered. <a href="/signup">Sign up here</a>.')
+        message = Markup('This username is not registered! Please contact the admins.')
         flash(message, 'danger')
         return redirect(url_for('login.login_get'))
 
