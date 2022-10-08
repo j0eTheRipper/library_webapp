@@ -4,18 +4,18 @@ from app.database_config.models import Users
 from app.shared_functions import login_required, admin_only
 
 
-bp = Blueprint('signup', __name__, url_prefix='/signup')
+bp = Blueprint('add_user', __name__, url_prefix='/add_user')
 
 
 @bp.route('/')
 @login_required
 @admin_only
-def signup_get():
-    return render_template('authentication/signup.html')
+def add_user_get():
+    return render_template('authentication/add_user.html')
 
 
 @bp.route('/', methods=['POST'])
-def signup_post():
+def add_user_post():
     username = request.form.get('username')
     password = request.form.get('password')
     password_confirmation = request.form.get('password_confirmation')
@@ -23,7 +23,7 @@ def signup_post():
     input_errors = check_for_errors(password, password_confirmation, username)
 
     if input_errors:
-        return redirect(url_for('signup.signup_get'))
+        return redirect(url_for('manage_users.add_user.add_user_get'))
 
     return register_user(password, username)
 
@@ -57,15 +57,9 @@ def check_for_errors(password, password_confirmation, username):
 def register_user(password, username):
     user = Users.create_user(username, password)
     add_to_db(user)
-    register_user_to_session(user)
+    flash(f'{username} has been added successfully!', 'success')
 
     return redirect(url_for('home.home'))
-
-
-def register_user_to_session(user: Users):
-    session['username'] = user.username
-    session['is_admin'] = user.is_admin
-    flash(f'Welcome, {user.username}, you made it!', 'success')
 
 
 def add_to_db(user):

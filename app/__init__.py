@@ -23,20 +23,23 @@ def create_app(test_config=None):
         db.init_app(app)
 
     from .authentication.login import login_bp
-    from .authentication.signup import signup_bp
     app.register_blueprint(login_bp)
-    app.register_blueprint(signup_bp)
 
-    from .index import index_bp
+    from app.index import index_bp
     app.register_blueprint(index_bp)
 
-    from .borrow import borrow_bp
+    from app.borrow import borrow_bp
     app.register_blueprint(borrow_bp)
 
-    from .borrow_history import borrows_bp
+    from app.borrow_history import borrows_bp
     app.register_blueprint(borrows_bp)
 
     from app.return_book import return_book_bp
     app.register_blueprint(return_book_bp)
+
+    from app.manage_users import manage_users_bp
+    from app.manage_users.add_user import add_user_bp
+    manage_users_bp.register_blueprint(add_user_bp)
+    app.register_blueprint(manage_users_bp)
 
     return app

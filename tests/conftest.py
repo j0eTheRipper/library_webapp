@@ -50,14 +50,14 @@ class AuthActions:
     def logout(self):
         return self.__client.get('/login/logout')
 
-    def signup(self, username, password, password_conf):
+    def add_user(self, username, password, password_conf):
         data = {
             'username': username,
             'password': password,
             'password_confirmation': password_conf,
         }
 
-        return self.__client.post('/signup/', data=data)
+        return self.__client.post('/manage_users/add_user/', data=data)
 
 
 @fixture

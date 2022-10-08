@@ -1,16 +1,16 @@
 from tests.repeated_tests.repeated_request_tests import unauthorized_access
 
 
-URL = 'http://localhost/signup/'
+URL = 'http://localhost/manage_users/add_user/'
 
 
-def test_signup(app, client, authenticate):
+def test_add_user(app, client, authenticate):
     assert client.get(URL).status_code == 401
     authenticate.login('admin', 'admin')
 
     assert client.get(URL).status_code == 200
 
-    response = authenticate.signup('new_user', 'password', 'password')
+    response = authenticate.add_user('new_user', 'password', 'password')
     assert response.headers['Location'] == 'http://localhost/'
 
     with app.app_context():
@@ -25,7 +25,7 @@ def test_signup(app, client, authenticate):
 
 def test_registered_user(app, authenticate, client):
     authenticate.login('admin', 'admin')
-    response = authenticate.signup('admin', 'password', 'password')
+    response = authenticate.add_user('admin', 'password', 'password')
     assert response.headers['Location'] == URL
 
     response = client.get(URL)
@@ -34,7 +34,7 @@ def test_registered_user(app, authenticate, client):
 
 def test_non_matching_passwords(authenticate, client):
     authenticate.login('admin', 'admin')
-    response = authenticate.signup('new_guy', 'password', 'different_password')
+    response = authenticate.add_user('new_guy', 'password', 'different_password')
     assert response.headers['Location'] == URL
 
     response = client.get(URL)
