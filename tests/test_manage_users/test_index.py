@@ -8,8 +8,15 @@ def test_unauthorized_access(client):
     unauthorized_access(client, URL)
 
 
-def test_normal_user_login(client, authenticate):
+def test_normal_user_access(client, authenticate):
     authenticate.login('user', 'user')
     response = client.get(URL)
 
     assert response.status_code == 403
+
+
+def test_valid_access(client, authenticate):
+    authenticate.login('admin', 'admin')
+    response = client.get(URL)
+
+    assert response.status_code == 200
