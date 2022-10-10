@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-
 from sqlalchemy import create_engine, Column, Integer, ForeignKey, Boolean, Date, String
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from flask import current_app
@@ -36,14 +35,16 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, index=True, nullable=False)
+    fullname = Column(String, unique=True, nullable=False)
+    class_id = Column(String, unique=False, index=True, nullable=True)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
     borrows = relationship('Borrows', backref='users')
 
     @staticmethod
-    def create_user(username, password, is_admin=False):
+    def create_user(username, password, fullname, class_id, is_admin=False):
         passwd = generate_password_hash(password)
-        user = Users(username=username, password=passwd, is_admin=is_admin)
+        user = Users(username=username, password=passwd, fullname=fullname, class_id=class_id, is_admin=is_admin)
         return user
 
 
@@ -64,6 +65,20 @@ class Borrows(Base):
         borrow = Borrows(borrower=user.username, book=book.title, due_date=return_date)
         book.count -= 1
         return borrow, book
+
+    @property
+    def fullname(self):
+        return self.__get_borrower_info()[0]
+
+    @property
+    def class_id(self):
+        return self.__get_borrower_info()[1]
+
+    def __get_borrower_info(self):
+        username = self.borrower
+        with Session() as session:
+            record = session.query(Users).filter_by(username=username).first()
+        return record.fullname, record.class_id
 
     def return_book(self, book):
         date_returned = date.today()

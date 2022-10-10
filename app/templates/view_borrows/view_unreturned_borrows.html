@@ -12,6 +12,7 @@
                     <th scope="col">Book</th>
                     {% if session['is_admin'] %}
                         <th>Borrower</th>
+                        <th>Class</th>
                     {% endif %}
                     <th scope="col">Date Borrowed</th>
                     <th scope="col">Due Date</th>
@@ -27,7 +28,8 @@
                     {% endif %}
                         <td>{{ borrow.book }}</td>
                         {% if session['is_admin'] %}
-                            <td>{{ borrow.borrower }}</td>
+                            <td>{{ borrow.fullname }}</td>
+                            <td>{{ borrow.class_id }}</td>
                         {% endif %}
                         <td>{{ borrow.date_borrowed }}</td>
                         <td>{{ borrow.due_date }}</td>

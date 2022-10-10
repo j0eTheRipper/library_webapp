@@ -10,7 +10,7 @@ def test_add_user(app, client, authenticate):
 
     assert client.get(URL).status_code == 200
 
-    response = authenticate.add_user('new_user', 'password', 'password')
+    response = authenticate.add_user('new_user', 'password', 'password', 'joe guage', '12D')
     assert response.headers['Location'] == 'http://localhost/'
 
     with app.app_context():
@@ -25,7 +25,7 @@ def test_add_user(app, client, authenticate):
 
 def test_registered_user(app, authenticate, client):
     authenticate.login('admin', 'admin')
-    response = authenticate.add_user('admin', 'password', 'password')
+    response = authenticate.add_user('admin', 'password', 'password', 'john ruth', '')
     assert response.headers['Location'] == URL
 
     response = client.get(URL)
@@ -34,7 +34,7 @@ def test_registered_user(app, authenticate, client):
 
 def test_non_matching_passwords(authenticate, client):
     authenticate.login('admin', 'admin')
-    response = authenticate.add_user('new_guy', 'password', 'different_password')
+    response = authenticate.add_user('new_guy', 'password', 'different_password', 'oswaldo mobray', '9C')
     assert response.headers['Location'] == URL
 
     response = client.get(URL)
@@ -52,7 +52,7 @@ def test_incomplete_request(client, authenticate):
         assert response.headers['Location'] == URL
 
         response = client.get(URL)
-        assert b'Please provide a username and a password' in response.data
+        assert b'Please fill out all the fields' in response.data
 
 
 def test_normal_user_access(client, authenticate):
