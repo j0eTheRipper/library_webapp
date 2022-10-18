@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from flask import current_app
 from werkzeug.security import generate_password_hash
 
-engine = create_engine('sqlite:///' + current_app.config.get('DATABASE'))
+engine = create_engine(current_app.config.get('DATABASE'))
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 

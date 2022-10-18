@@ -7,7 +7,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=join(app.instance_path, 'db.sqlite'),
+        DATABASE='postgresql://postgres@localhost:5432/library',
     )
 
     if test_config is None:

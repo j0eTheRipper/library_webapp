@@ -1,6 +1,6 @@
 from pytest import fixture
 from app import create_app
-from sqlite3 import connect
+from sqlalchemy.sql import text
 from os import remove
 
 
@@ -9,20 +9,25 @@ def app():
     app = create_app(
         {
             'TESTING': True,
-            'DATABASE': 'testing.sqlite',
+            'DATABASE': 'sqlite://',
         }
     )
 
     with app.app_context():
         from app.database_config.db import init_db
+        from app.database_config.models import engine
 
         init_db()
-        with connect('testing.sqlite') as connection:
+        with engine.connect() as connection:
             with open(f'test.sql') as script:
-                connection.executescript(script.read())
+                query = ''
+                for line in script:
+                    query += line
+                    if ';' in query:
+                        connection.execute(text(query))
+                        query = ''
 
     yield app
-    remove('testing.sqlite')
 
 
 @fixture
