@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'home-base.html' %}
 {% block page_title %}
 return book
 {% endblock %}
@@ -8,7 +8,9 @@ return book
     <form method="post">
         <p>Returning <span id="book">{{ title }}</span></p>
         <input type="password" name="password" id="password" required placeholder="password">
+        <br>
         <button type="submit" class="btn btn-primary">Return</button>
+        <a href="/borrows/history_unreturned" type="button" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 {% endblock %}

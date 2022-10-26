@@ -11,7 +11,7 @@ bp = Blueprint('add_user', __name__, url_prefix='/add_user')
 @login_required
 @admin_only
 def add_user_get():
-    return render_template('authentication/add_user.html')
+    return render_template('manage_users/add_user.html')
 
 
 @bp.route('/', methods=['POST'])

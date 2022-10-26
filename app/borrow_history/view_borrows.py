@@ -12,7 +12,7 @@ bp = Blueprint('borrows', __name__, url_prefix='/borrows')
 @login_required
 def view_returned_borrows():
     db = get_db()
-    borrows = db.query(Borrows).filter(Borrows.date_returned)
+    borrows = db.query(Borrows).filter(Borrows.date_returned != None)
     filters = request.args.get('filter')
 
     borrows = process_borrows(borrows, True, filters)

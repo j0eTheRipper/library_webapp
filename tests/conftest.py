@@ -1,7 +1,6 @@
 from pytest import fixture
 from app import create_app
 from sqlalchemy.sql import text
-from os import remove
 
 
 @fixture
