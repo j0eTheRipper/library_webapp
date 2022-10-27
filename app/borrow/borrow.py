@@ -37,14 +37,7 @@ def borrow_get(book):
     users_borrows = [borrow.book for borrow in users_borrows]
 
     if request.method == 'GET':
-        if book.count <= 0:
-            flash('The book you selected is not available right now!', 'danger')
-            return redirect(url_for('borrow.browse'))
-        elif book.title in users_borrows:
-            flash('You already have that book!', 'danger')
-            return redirect(url_for('borrow.browse'))
-        else:
-            return render_template('borrow/borrow.html', title=book.title)
+        return validate_borrow(book, users_borrows)
     else:
         user = db.query(Users).filter_by(username=session['username']).first()
         return borrow_post(book, user, db)
@@ -59,6 +52,17 @@ def borrow_post(book, user, db):
     else:
         flash(f'Incorrect Password', 'danger')
         return redirect(url_for('borrow.borrow_get', book=book.id))
+
+
+def validate_borrow(book, users_borrows):
+    if book.count <= 0:
+        flash('The book you selected is not available right now!', 'danger')
+        return redirect(url_for('borrow.browse'))
+    elif book.title in users_borrows:
+        flash('You already have that book!', 'danger')
+        return redirect(url_for('borrow.browse'))
+    else:
+        return render_template('borrow/borrow.html', title=book.title)
 
 
 def borrow_book(book, db, user):

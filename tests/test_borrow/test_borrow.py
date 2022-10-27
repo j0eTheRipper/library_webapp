@@ -1,5 +1,5 @@
 from tests.repeated_tests.repeated_request_tests import *
-from tests.test_borrow.testing_functions import db_test
+from tests.repeated_tests.check_books_rendering import db_test
 
 AVAILABLE_BOOK = 'http://localhost/borrow/3'
 UNAVAILABLE_BOOK = 'http://localhost/borrow/1'

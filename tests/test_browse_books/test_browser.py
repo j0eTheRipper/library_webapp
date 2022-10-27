@@ -1,5 +1,5 @@
 from tests.repeated_tests.repeated_request_tests import *
-from tests.test_borrow.testing_functions import assert_books
+from tests.repeated_tests.check_books_rendering import assert_books
 
 URL = 'http://localhost/borrow/browse'
 
