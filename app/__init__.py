@@ -22,7 +22,7 @@ def create_app(test_config=None):
         from .database_config import db
         db.init_app(app)
 
-    from .authentication.login import login_bp
+    from app.authentication.login import login_bp
     app.register_blueprint(login_bp)
 
     from app.index import index_bp
@@ -36,6 +36,9 @@ def create_app(test_config=None):
 
     from app.return_book import return_book_bp
     app.register_blueprint(return_book_bp)
+
+    from app.browse import browse_bp
+    app.register_blueprint(browse_bp)
 
     from app.manage_users import manage_users_bp
     from app.manage_users.add_user import add_user_bp

@@ -20,9 +20,9 @@ def test_valid_but_unavailable(app, client, authenticate):
     authenticate.login('user', 'user')
     response = client.get(UNAVAILABLE_BOOK)
     assert response.status_code == 302
-    assert response.headers['Location'] == 'http://localhost/borrow/browse'
+    assert response.headers['Location'] == 'http://localhost/browse/'
 
-    response = client.get('http://localhost/borrow/browse')
+    response = client.get('http://localhost/browse/')
     assert b'The book you selected is not available right now!' in response.data
 
 
@@ -44,9 +44,9 @@ def test_borrowing_an_unreturned_book(app, client, authenticate):
     authenticate.login('user', 'user')
     re_borrow_response = client.get('http://localhost/borrow/2')
     assert re_borrow_response.status_code == 302
-    assert re_borrow_response.headers['Location'] == 'http://localhost/borrow/browse'
+    assert re_borrow_response.headers['Location'] == 'http://localhost/browse/'
 
-    response = client.get('http://localhost/borrow/browse')
+    response = client.get('http://localhost/browse/')
     assert b'You already have that book!' in response.data
 
 

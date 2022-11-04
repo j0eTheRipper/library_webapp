@@ -17,7 +17,12 @@
                 </thead>
                 <tbody>
                 {% for book in books %}
-                    <tr onclick="window.location = '/borrow/{{book.id}}'">
+                    {% if session.get('is_admin') %}
+                        <tr ondblclick="window.location = '/manage_books/edit_book/{{book.id}}'">
+                        <tr oncontextmenu="window.location = '/manage_books/edit_book/{{book.id}}'">
+                    {% else %}
+                        <tr onclick="window.location = '/borrow/{{book.id}}'">
+                    {% endif %}
                         <td>{{ book.title }}</td>
                         <td>{{ book.author }}</td>
                         <td>{{ book.subject }}</td>
@@ -37,6 +42,9 @@
                 </select>
                 <a class="btn btn-primary filter" href="/borrow/browse" role="button">Reset Subject Filter</a>
             </form>
+            {% if session.get('is_admin') %}
+                <a href="/manage_books/add_book" class="btn btn-secondary">Add book</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
