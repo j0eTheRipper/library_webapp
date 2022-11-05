@@ -3,7 +3,7 @@ from app import create_app
 from sqlalchemy.sql import text
 
 
-@fixture
+@fixture(scope='session')
 def app():
     app = create_app(
         {
@@ -29,12 +29,12 @@ def app():
     yield app
 
 
-@fixture
+@fixture(scope='session')
 def client(app):
     return app.test_client()
 
 
-@fixture
+@fixture(scope='session')
 def runner(app):
     return app.test_cli_runner()
 
@@ -66,6 +66,6 @@ class AuthActions:
         return self.__client.post('/manage_users/add_user/', data=data)
 
 
-@fixture
+@fixture(scope='session')
 def authenticate(client):
     return AuthActions(client)
