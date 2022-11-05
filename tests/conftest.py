@@ -29,7 +29,7 @@ def app():
     yield app
 
 
-@fixture(scope='session')
+@fixture
 def client(app):
     return app.test_client()
 
@@ -66,6 +66,6 @@ class AuthActions:
         return self.__client.post('/manage_users/add_user/', data=data)
 
 
-@fixture(scope='session')
+@fixture
 def authenticate(client):
     return AuthActions(client)

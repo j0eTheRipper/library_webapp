@@ -1,16 +1,17 @@
 from flask import session
 
-URL = 'http://localhost/login/'
+URL = '/login/'
+main_page = '/'
 
 
 def test_login_admin(client, authenticate):
     assert client.get(URL).status_code == 200
 
     response = authenticate.login('admin', 'admin')
-    assert response.headers['Location'] == 'http://localhost/'
+    assert response.headers['Location'] == '/'
 
     with client:
-        response = client.get('http://localhost/')
+        response = client.get('/')
         assert session['is_admin']
 
         assert b'Manage Books' in response.data
@@ -23,10 +24,10 @@ def test_login_admin(client, authenticate):
 
 def test_login_user(client, authenticate):
     response = authenticate.login('user', 'user')
-    assert response.headers['Location'] == 'http://localhost/'
+    assert response.headers['Location'] == main_page
 
     with client:
-        response = client.get('http://localhost/')
+        response = client.get(main_page)
         assert not session['is_admin']
 
         assert b'Browse Books' in response.data

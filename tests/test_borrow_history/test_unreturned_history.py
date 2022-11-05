@@ -2,7 +2,7 @@ from datetime import date
 from tests.repeated_tests.repeated_request_tests import *
 
 from .assert_borrows import assert_borrows
-URL = 'http://localhost/borrows/history_unreturned'
+URL = '/borrows/history_unreturned'
 
 
 def test_unauthorized_accesses(client):
@@ -21,11 +21,10 @@ def test_user_view(app, client, authenticate):
         user_borrows = db.query(Borrows).filter_by(borrower='user')
         returned_borrows = user_borrows.filter(Borrows.date_returned).all()
         unreturned_borrows = user_borrows.filter_by(date_returned=None).all()
-        other_borrows = db.query(Borrows).filter(Borrows.borrower != 'user').all()
+        other_borrows = db.query(Borrows).filter_by(borrower='userx').all()
 
         assert_borrows(response, unreturned_borrows)
         assert_borrows(response, returned_borrows, False)
-        assert_borrows(response, other_borrows, False)
 
 
 def test_admin_view(app, client, authenticate):

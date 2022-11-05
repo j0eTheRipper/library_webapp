@@ -1,7 +1,7 @@
 from tests.repeated_tests.repeated_request_tests import unauthorized_access
 
 
-URL = 'http://localhost/manage_users/add_user/'
+URL = '/manage_users/add_user/'
 
 
 def test_add_user(app, client, authenticate):
@@ -11,7 +11,7 @@ def test_add_user(app, client, authenticate):
     assert client.get(URL).status_code == 200
 
     response = authenticate.add_user('new_user', 'password', 'password', 'joe guage', '12D')
-    assert response.headers['Location'] == 'http://localhost/'
+    assert response.headers['Location'] == '/'
 
     with app.app_context():
         from app.database_config.db import get_db

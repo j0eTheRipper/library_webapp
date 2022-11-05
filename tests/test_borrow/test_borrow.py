@@ -1,8 +1,10 @@
 from tests.repeated_tests.repeated_request_tests import *
 from tests.repeated_tests.check_books_rendering import db_test
 
-AVAILABLE_BOOK = 'http://localhost/borrow/3'
-UNAVAILABLE_BOOK = 'http://localhost/borrow/1'
+AVAILABLE_BOOK = '/borrow/3'
+UNAVAILABLE_BOOK = '/borrow/1'
+borrows_page = '/browse/'
+main_page = '/'
 
 
 @db_test(False)
@@ -20,9 +22,9 @@ def test_valid_but_unavailable(app, client, authenticate):
     authenticate.login('user', 'user')
     response = client.get(UNAVAILABLE_BOOK)
     assert response.status_code == 302
-    assert response.headers['Location'] == 'http://localhost/browse/'
+    assert response.headers['Location'] == borrows_page
 
-    response = client.get('http://localhost/browse/')
+    response = client.get(borrows_page)
     assert b'The book you selected is not available right now!' in response.data
 
 
@@ -42,11 +44,11 @@ def test_wrong_borrow_password(app, client, authenticate):
 @db_test(False)
 def test_borrowing_an_unreturned_book(app, client, authenticate):
     authenticate.login('user', 'user')
-    re_borrow_response = client.get('http://localhost/borrow/2')
+    re_borrow_response = client.get('/borrow/2')
     assert re_borrow_response.status_code == 302
-    assert re_borrow_response.headers['Location'] == 'http://localhost/browse/'
+    assert re_borrow_response.headers['Location'] == borrows_page
 
-    response = client.get('http://localhost/browse/')
+    response = client.get(borrows_page)
     assert b'You already have that book!' in response.data
 
 
@@ -55,4 +57,4 @@ def test_borrow(app, client, authenticate):
     authenticate.login('user', 'user')
     response = client.post(AVAILABLE_BOOK, data={'password': 'user'})
     assert response.status_code == 302
-    assert response.headers['Location'] == 'http://localhost/'
+    assert response.headers['Location'] == main_page

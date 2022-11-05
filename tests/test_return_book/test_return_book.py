@@ -1,6 +1,6 @@
 from tests.repeated_tests.repeated_request_tests import *
 
-URL = 'http://localhost/return/1'
+URL = '/return/1'
 
 
 def test_guest_access(client, authenticate):
@@ -11,7 +11,7 @@ def test_admin_access(client, authenticate):
     authenticate.login('admin', 'admin')
     response = client.get(URL)
     assert response.status_code == 302
-    assert response.headers['Location'] == 'http://localhost/borrows/history_unreturned'
+    assert response.headers['Location'] == '/borrows/history_unreturned'
 
 
 def test_user_access(client, authenticate):
@@ -40,7 +40,7 @@ def test_valid_credentials(client, authenticate, app):
     authenticate.login('user', 'user')
     response = client.post(URL, data={'password': 'user'})
     assert response.status_code == 302
-    assert response.headers['Location'] == 'http://localhost/borrows/history_unreturned'
+    assert response.headers['Location'] == '/borrows/history_unreturned'
     assert b'Returned Successfully' in client.get(response.headers["Location"]).data
 
     with app.app_context():
