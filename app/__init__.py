@@ -46,6 +46,8 @@ def create_app(test_config=None):
     app.register_blueprint(manage_users_bp)
 
     from app.manage_books import manage_books_index_bp
+    from app.manage_books.add_book import add_book_bp
+    manage_books_index_bp.register_blueprint(add_book_bp)
     app.register_blueprint(manage_books_index_bp)
 
     return app
