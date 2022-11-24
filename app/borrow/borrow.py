@@ -43,6 +43,9 @@ def validate_borrow(book, users_borrows):
     elif book.title in users_borrows:
         flash('You already have that book!', 'danger')
         return redirect(url_for('browse.browse'))
+    elif users_borrows:
+        flash('Please return your borrows.', 'danger')
+        return redirect(url_for('browse.browse'))
     else:
         return render_template('borrow/borrow.html', title=book.title)
 

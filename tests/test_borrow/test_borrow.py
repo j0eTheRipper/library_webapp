@@ -30,7 +30,7 @@ def test_valid_but_unavailable(app, client, authenticate):
 
 @db_test(False)
 def test_valid_and_available(app, client, authenticate):
-    request_user_page(client, authenticate, AVAILABLE_BOOK, 'user', 'user')
+    request_user_page(client, authenticate, AVAILABLE_BOOK, 'userx', 'admin')
 
 
 @db_test(False)
@@ -52,9 +52,19 @@ def test_borrowing_an_unreturned_book(app, client, authenticate):
     assert b'You already have that book!' in response.data
 
 
+@db_test(False)
+def test_borrowing_without_returning(app, client, authenticate):
+    authenticate.login('user', 'user')
+    get_response = client.get(AVAILABLE_BOOK)
+    assert get_response.status_code == 302
+    assert get_response.headers['Location'] == borrows_page
+    redirect_response = client.get(borrows_page)
+    assert b'Please return your borrows.' in redirect_response.data
+
+
 @db_test(True)
 def test_borrow(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.post(AVAILABLE_BOOK, data={'password': 'user'})
+    authenticate.login('userx', 'admin')
+    response = client.post(AVAILABLE_BOOK, data={'password': 'admin'})
     assert response.status_code == 302
     assert response.headers['Location'] == main_page

@@ -9,7 +9,7 @@ VALUES
 
 INSERT INTO users ("fullname", "class_id", "username", "password", "is_admin")
 VALUES
-('yahya alaa', '5D', 'userx', 'pbkdf2:sha256:260000$OhaDgBhnSdwT3sJD$6440c58a64e9af710a90e5d3339fd4cd883a9962b8e01d1ca61a7281a11ac211', 0);
+('yahya alaa', '5D', 'userx', 'pbkdf2:sha256:260000$Ok1YsbzJIUiLUIqC$076180e2657090eef94f250cf17300afe9d007997132b496dfae5d1eac59e37a', 0);
 
 --books--
 INSERT INTO books ("title", "subject", "author", "count")
@@ -32,10 +32,6 @@ VALUES
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES
 ('user', 'The Fault In Our Stars', "25-04-2022", "02-05-2022", NULL);
-
-INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
-VALUES
-('userx', '1984', "25-04-2022", "02-05-2022", NULL);
 
 INSERT INTO borrows ("borrower", "book", "date_borrowed", "due_date", "date_returned")
 VALUES

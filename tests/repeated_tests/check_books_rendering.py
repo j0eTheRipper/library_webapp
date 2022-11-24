@@ -10,7 +10,7 @@ def db_test(state=False):
                 db = get_db()
                 if state:
                     borrows = db.query(Borrows).all()
-                    assert len(borrows) == 7
+                    assert len(borrows) == 6
                     assert borrows[-1].book == '1984'
                 else:
                     borrow = db.query(Borrows).filter_by(id=7).first()

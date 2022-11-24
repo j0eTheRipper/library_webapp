@@ -74,16 +74,6 @@ class Borrows(Base):
     def class_id(self):
         return self.__get_borrower_info()[1]
 
-    # @property
-    # def all_unreturned_books(self):
-    #     with Session() as db:
-    #         unreturned_books_query = db.query(Borrows).filter_by(date_returned=None)
-    #
-    #     return unreturned_books_query.all()
-    #
-    # @property
-    # def
-
     def return_book(self, book):
         date_returned = date.today()
         self.date_returned = date_returned
