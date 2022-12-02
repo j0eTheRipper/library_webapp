@@ -11,15 +11,20 @@ bp = Blueprint('borrow', __name__, url_prefix='/borrow')
 @login_required
 def borrow_get(book):
     if session['is_admin']:
-        abort(403, 'Admins can not borrow from their own library!')
+        flash('Admins can not borrow from their own library!', 'danger')
+        return redirect(url_for('browse.browse'), 403)
 
     db = get_db()
     book = db.query(Books).filter_by(id=book).first()
     users_borrows = db.query(Borrows).filter_by(borrower=session['username']).filter_by(date_returned=None).all()
     users_borrows = [borrow.book for borrow in users_borrows]
 
+    error = validate_borrow(book, users_borrows)
+    if error:
+        return error
+
     if request.method == 'GET':
-        return validate_borrow(book, users_borrows)
+        return render_template('borrow/borrow.html', title=book.title)
     else:
         user = db.query(Users).filter_by(username=session['username']).first()
         return borrow_post(book, user, db)
@@ -46,8 +51,6 @@ def validate_borrow(book, users_borrows):
     elif users_borrows:
         flash('Please return your borrows.', 'danger')
         return redirect(url_for('browse.browse'))
-    else:
-        return render_template('borrow/borrow.html', title=book.title)
 
 
 def borrow_book(book, db, user):

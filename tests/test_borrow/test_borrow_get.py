@@ -14,12 +14,13 @@ def test_invalid_access(app, client, authenticate):
     authenticate.login('admin', 'admin')
     response = client.get(AVAILABLE_BOOK)
     assert response.status_code == 403
+    response = client.get(borrows_page)
     assert b'Admins can not borrow from their own library!' in response.data
 
 
 @db_test(False)
 def test_valid_but_unavailable(app, client, authenticate):
-    authenticate.login('user', 'user')
+    authenticate.login('userx', 'admin')
     response = client.get(UNAVAILABLE_BOOK)
     assert response.status_code == 302
     assert response.headers['Location'] == borrows_page
@@ -31,14 +32,6 @@ def test_valid_but_unavailable(app, client, authenticate):
 @db_test(False)
 def test_valid_and_available(app, client, authenticate):
     request_user_page(client, authenticate, AVAILABLE_BOOK, 'userx', 'admin')
-
-
-@db_test(False)
-def test_wrong_borrow_password(app, client, authenticate):
-    authenticate.login('user', 'user')
-    response = client.post(AVAILABLE_BOOK, data={'password': 'wrong_password'})
-    assert response.status_code == 302
-    assert response.headers['Location'] == AVAILABLE_BOOK
 
 
 @db_test(False)
@@ -60,11 +53,3 @@ def test_borrowing_without_returning(app, client, authenticate):
     assert get_response.headers['Location'] == borrows_page
     redirect_response = client.get(borrows_page)
     assert b'Please return your borrows.' in redirect_response.data
-
-
-@db_test(True)
-def test_borrow(app, client, authenticate):
-    authenticate.login('userx', 'admin')
-    response = client.post(AVAILABLE_BOOK, data={'password': 'admin'})
-    assert response.status_code == 302
-    assert response.headers['Location'] == main_page
