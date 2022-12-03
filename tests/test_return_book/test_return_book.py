@@ -1,6 +1,7 @@
 from tests.repeated_tests.repeated_request_tests import *
 
 URL = '/return/1'
+URL_returned = '/return/2'
 
 
 def test_guest_access(client, authenticate):
@@ -54,3 +55,7 @@ def test_valid_credentials(client, authenticate, app):
         book = db.query(Books).filter_by(title=first_borrow.book).first()
         assert first_borrow.date_returned
         assert book.count == 3
+
+
+def test_returning_a_returned_borrow(client, authenticate, app):
+    pass
