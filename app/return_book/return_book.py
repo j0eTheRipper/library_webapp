@@ -14,7 +14,12 @@ def get_return_book(borrow_id):
         return redirect(url_for('borrows.view_unreturned_borrows'))
     else:
         db = get_db()
-        title = db.query(Borrows).filter_by(id=borrow_id).first().book
+        borrow = db.query(Borrows).filter_by(id=borrow_id).first()
+        if borrow.date_returned:
+            flash('Sneaky, I like that! ;)', 'warning')
+            return redirect(url_for('home.home'))
+
+        title = borrow.book
         return render_template('return_book/return_book.html', title=title)
 
 
@@ -25,6 +30,11 @@ def return_book(borrow_id):
     correct_passwd = db.query(Users).filter_by(username=session.get('username')).first().password
     password_input = request.form['password']
     password_is_correct = check_password_hash(correct_passwd, password_input)
+    borrow = db.query(Borrows).filter_by(id=borrow_id).first()
+
+    if borrow.date_returned:
+        flash('Sneaky, I like that! ;)', 'warning')
+        return redirect(url_for('home.home'))
 
     if password_is_correct:
         return_borrowed_book(borrow_id, db)

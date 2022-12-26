@@ -54,7 +54,7 @@ def check_for_errors(password, password_confirmation, username, fullname):
 
 
 def register_user(password, username, fullname, class_id):
-    user = Users.create_user(username, password, fullname, class_id)
+    user = Users.create_user(username, password, fullname.title(), class_id.title())
     add_to_db(user)
     flash(f'{fullname} has been added successfully!', 'success')
 

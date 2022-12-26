@@ -3,9 +3,7 @@ p {
 }
 
 body {
-	background-image: linear-gradient( yellow, darkblue);
-	background-repeat: no-repeat;
-	height: 100%;
+    background-color: lightgreen;
 }
 
 .content {

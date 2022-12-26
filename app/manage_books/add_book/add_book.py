@@ -34,9 +34,9 @@ def post_add_book():
         return redirect(url_for('manage_books.add_books.get_add_book'))
     else:
         new_book = Books(
-            title=book_data['title'],
+            title=book_data['title'].title(),
             subject=book_data['subject'],
-            author=book_data['author'],
+            author=book_data['author'].title(),
             count=book_data['count'],
         )
         db.add(new_book)

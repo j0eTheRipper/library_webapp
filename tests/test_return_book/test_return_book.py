@@ -1,4 +1,5 @@
 from tests.repeated_tests.repeated_request_tests import *
+from datetime import date
 
 URL = '/return/1'
 URL_returned = '/return/2'
@@ -37,6 +38,25 @@ def test_invalid_credentials(client, authenticate, app):
         assert not first_borrow.date_returned
 
 
+def test_returning_a_returned_borrow(client, authenticate, app):
+    authenticate.login('user', 'user')
+    response = client.post(URL_returned, data={'password': 'user'})
+    assert response.headers['Location'] == '/'
+    assert b'Sneaky, I like that! ;)'
+
+    with app.app_context():
+        from app.database_config.db import get_db
+        from app.database_config.models import Borrows, Books
+
+        db = get_db()
+
+        user_borrows = db.query(Borrows).filter_by(borrower='user')
+        first_borrow = user_borrows.filter_by(id=1).first()
+        book = db.query(Books).filter_by(title=first_borrow.book).first()
+        assert first_borrow.date_returned != date.today()
+        assert book.count == 2
+
+
 def test_valid_credentials(client, authenticate, app):
     authenticate.login('user', 'user')
     response = client.post(URL, data={'password': 'user'})
@@ -53,9 +73,5 @@ def test_valid_credentials(client, authenticate, app):
         user_borrows = db.query(Borrows).filter_by(borrower='user')
         first_borrow = user_borrows.filter_by(id=1).first()
         book = db.query(Books).filter_by(title=first_borrow.book).first()
-        assert first_borrow.date_returned
+        assert first_borrow.date_returned == date.today()
         assert book.count == 3
-
-
-def test_returning_a_returned_borrow(client, authenticate, app):
-    pass
