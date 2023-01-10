@@ -44,7 +44,7 @@ class Users(Base):
     @staticmethod
     def create_user(username, password, fullname, class_id, is_admin=False):
         passwd = generate_password_hash(password)
-        user = Users(username=username, password=passwd, fullname=fullname, class_id=class_id, is_admin=is_admin)
+        user = Users(username=username.lower(), password=passwd, fullname=fullname, class_id=class_id, is_admin=is_admin)
         return user
 
 

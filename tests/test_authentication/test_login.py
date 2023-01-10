@@ -7,7 +7,7 @@ main_page = '/'
 def test_login_admin(client, authenticate):
     assert client.get(URL).status_code == 200
 
-    response = authenticate.login('admin', 'admin')
+    response = authenticate.login('AdMin', 'admin')
     assert response.headers['Location'] == '/'
 
     with client:
@@ -23,7 +23,7 @@ def test_login_admin(client, authenticate):
 
 
 def test_login_user(client, authenticate):
-    response = authenticate.login('user', 'user')
+    response = authenticate.login('UsEr', 'user')
     assert response.headers['Location'] == main_page
 
     with client:

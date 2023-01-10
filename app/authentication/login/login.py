@@ -25,6 +25,7 @@ def login_post():
         return redirect(url_for('login.login_get'))
 
     db = get_db()
+    username = username.lower()
     user_query = db.query(Users).filter_by(username=username).first()
     close_db()
 

@@ -10,7 +10,7 @@ def test_add_user(app, client, authenticate):
 
     assert client.get(URL).status_code == 200
 
-    response = authenticate.add_user('new_user', 'password', 'password', 'joe guage', '12D')
+    response = authenticate.add_user('neW_UsEr', 'password', 'password', 'joe guage', '12D')
     assert response.headers['Location'] == '/'
 
     with app.app_context():
