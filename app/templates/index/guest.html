@@ -5,7 +5,9 @@
 {% block page_content %}
 {% if not is_logged_in %}
     <div class="container-fluid content">
-        <h1> PLEASE <a href="/login">LOGIN</a>... </h1>
+        <a href="/login">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="logo goes here.">
+        </a>
     </div>
 {% else %}
     <div class="container-fluid content">
