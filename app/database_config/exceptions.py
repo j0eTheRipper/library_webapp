@@ -2,10 +2,6 @@ class BookExists(BaseException):
     pass
 
 
-class SubjectNotFound(BaseException):
-    pass
-
-
 class BookNotFound(BaseException):
     pass
 

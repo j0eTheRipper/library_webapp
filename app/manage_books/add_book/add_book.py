@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.shared_functions import admin_only, login_required
 from app.database_config.db import get_db
 from app.database_config.models import Subject, Books
+from app.database_config.exceptions import BookExists
 
 
 bp = Blueprint('add_books', __name__, url_prefix='/add_book')
@@ -26,19 +27,17 @@ def post_add_book():
         flash('Please fill all the fields.', 'danger')
         return redirect(url_for('manage_books.add_books.get_add_book'))
 
-    db = get_db()
-    book_exists = db.query(Books).filter_by(title=book_data['title']).first()
+    return add_book(book_data)
 
-    if book_exists:
+
+def add_book(book_data):
+    db = get_db()
+    try:
+        new_book = Books.add_book(book_data)
+    except BookExists:
         flash('This book already exists!', 'danger')
         return redirect(url_for('manage_books.add_books.get_add_book'))
     else:
-        new_book = Books(
-            title=book_data['title'].title(),
-            subject=book_data['subject'],
-            author=book_data['author'].title(),
-            count=book_data['count'],
-        )
         db.add(new_book)
         db.commit()
         flash('Book added successfully!', 'success')

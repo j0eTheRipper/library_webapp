@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, ForeignKey, Boolean, Date
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from flask import current_app
 from werkzeug.security import generate_password_hash
+from app.database_config.exceptions import BookExists
 
 engine = create_engine(current_app.config.get('DATABASE'))
 Base = declarative_base(bind=engine)
@@ -25,6 +26,25 @@ class Books(Base):
     author = Column(String, nullable=False)
     count = Column(Integer, default=1, nullable=False)
     borrows = relationship('Borrows', backref='books')
+
+    @staticmethod
+    def add_book(book_data: dict):
+        title = ' '.join(book_data['title'].split()).title()
+        author = ' '.join(book_data['author'].split()).title()
+
+        with Session() as db:
+            book_exists = db.query(Books).filter_by(title=title).first()
+
+        if book_exists:
+            raise BookExists
+        else:
+            new_book = Books(
+                title=title,
+                author=author,
+                subject=book_data['subject'],
+                count=book_data['count'],
+            )
+            return new_book
 
     def __repr__(self):
         return f'<Book {self.id}: {self.title}>'
