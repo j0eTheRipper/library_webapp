@@ -1,3 +1,1 @@
-# A webapp for managing MOIS's library.
-
-
+# A webapp for managing a library
