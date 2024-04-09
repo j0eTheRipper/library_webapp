@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, flash, Markup, g
 from ..database_config.models import Borrows, Users
-from ..database_config.db import get_db, close_db
+from ..database_config.db import get_db
 from datetime import date
 
 
